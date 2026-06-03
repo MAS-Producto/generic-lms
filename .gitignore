@@ -1,0 +1,5 @@
+# Tool layer — starter pack (local only; do not push to team product repo)
+.cursor/
+templates/
+GUIDE.html
+/README.md
