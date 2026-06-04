@@ -263,7 +263,7 @@ Reuse reference prototype Spanish strings; replace **Inducción**, **Normativos*
 | Mi equipo | `mi-equipo.html` | sidebar | Table; filters; modal (2 categories) |
 | Biblioteca | `biblioteca.html` | sidebar | Tabs; resource cards; optional |
 
-**Stack:** `new-app-moodle` · **Icons:** Heroicons inline · **Actions:** `btn-carozzi` / primary Tailwind pattern from kit
+**Stack:** `new-app-moodle` · **Icons:** Heroicons inline · **Actions:** primary Tailwind pattern from kit
 
 **Sidebar order:** Inicio → Formación base → Mallas → Biblioteca → (sep) → Mi perfil → Mi Equipo*
 
@@ -273,23 +273,7 @@ Reuse reference prototype Spanish strings; replace **Inducción**, **Normativos*
 
 | Version | Date | Summary |
 |---------|------|---------|
-| 1 | 2025-06-03 | Generic template from Carozzi reference; removed Corporativos y Extensión; merged Formación base; Mallas simplified; new Inicio layout |
-
----
-
-## Appendix: Mapping from Carozzi prototype
-
-| Carozzi | Generic |
-|---------|---------|
-| Mi Camino (module) | **Mi Formación** |
-| `mi-camino.html` | `inicio.html` |
-| Inducción + Normativos | **Formación base** → `formacion-base.html` |
-| Skills | **Mallas** → `mallas.html` |
-| 5 skill areas | **Fundamentos**, **Desarrollo**, **Liderazgo** (+ Evaluación) |
-| Capsule text cards | **Course-style media cards** |
-| Corporativos y Extensión | **Removed** |
-| 2/3 + 1/3 dashboard | **Full-width Resumen + 2 tiles** |
-| Postular aquí | **Removed** |
+| 1 | 2025-06-03 | Initial generic LMS employee learning dashboard template import |
 
 ---
 

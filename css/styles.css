@@ -1,0 +1,288 @@
+/* new-app-moodle stack styles
+   Stack: Tailwind CSS CDN + Heroicons (inline SVG — https://heroicons.com/)
+   ──────────────────────────────────────────────────
+   This file provides structural base tokens for a plain Tailwind prototype.
+   It is copied to css/styles.css in the product root.
+   Brand colors, fonts, and logo are appended by prototype-assembler from
+   templates/brands/{client}/brand.css — brand tokens win via cascade.
+   ──────────────────────────────────────────────────
+   Usage: prototype-assembler concatenates this file + brand.css → product css/styles.css
+   Tailwind utilities: use standard gray-*, slate-* palette classes.
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* Base structural tokens — brand.css overrides these */
+:root {
+  --brand-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --brand-font-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --brand-primary: #171717;
+  --brand-primary-dark: #0a0a0a;
+  --brand-radius: 0.375rem;
+}
+
+/* Apply base font to body */
+body {
+  font-family: var(--brand-font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App shell rules live in templates/layouts/new-app/layout-shell.css
+   (linked from layout HTML and copied to product root by prototype-assembler). */
+
+/* ── Heroicons (inline SVG — no CDN) ───────────────────────────────────────
+   Source: https://heroicons.com/ (MIT). Default: outline 24×24, stroke 1.5.
+   Paste SVG paths from the site; use stroke="currentColor" for themeable icons.
+   Optional solid/mini/micro variants only when the PRD calls for them. */
+.heroicon {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+svg.heroicon {
+  display: block;
+  overflow: visible;
+}
+.heroicon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Sidebar rail — fixed icon box (avoids flex baseline / stroke clipping) */
+[data-rail-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+[data-rail-icon] svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: block;
+}
+.heroicon-sm {
+  width: 1rem;
+  height: 1rem;
+}
+.heroicon-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* ── Sidebar logo (rail shell) ── */
+.app-rail-shell__logo {
+  justify-content: center;
+}
+.app-rail-shell__logo > a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Collapsed rail (icon-only sidebar) */
+.app-rail-shell--collapsed .app-rail-shell__logo {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.app-rail-shell--collapsed .app-rail-shell__logo img {
+  height: 1.5rem;
+}
+.app-rail-shell--collapsed .app-rail-shell__aside nav {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.app-rail-shell--collapsed [data-rail-nav] {
+  justify-content: center;
+  gap: 0;
+}
+
+/* ── Prototype simulation bar (fixed bottom — do not remove in prototype) ── */
+.sim-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background-color: #374151;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.sim-bar .sim-bar-label {
+  font-weight: 600;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.sim-bar .sim-bar-states {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.sim-bar .sim-bar-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1.25;
+}
+.sim-bar .sim-bar-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.sim-bar .sim-bar-btn--active,
+.sim-bar .sim-bar-btn[aria-pressed="true"] {
+  background: #ffffff;
+  color: #111827;
+  border-color: #ffffff;
+  font-weight: 600;
+}
+/* MAS Consultores brand tokens
+   Source: logo mas-logo.svg + https://masconsultores.cl/
+   ──────────────────────────────────────────────────
+   Stack-agnostic CSS custom properties.
+   prototype-assembler appends this file to css/styles.css — brand tokens win via cascade.
+   Logo mark hex values in assets/images/logo.svg must match --brand-logo-* below.
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+
+:root {
+  /* Main — logo purple (SVG .cls-5); primary CTAs, links */
+  --brand-primary:       #833d8e;
+  --brand-primary-dark:  #6b3276;
+
+  /* Logo mark — four accent corners (SVG .cls-1–.cls-4) */
+  --brand-logo-yellow:   #edb321;
+  --brand-logo-red:      #d62216;
+  --brand-logo-blue:     #23398d;
+  --brand-logo-green:    #009739;
+  --brand-logo-purple:   #833d8e;
+
+  /* Prototype aliases (prefer logo-* names in new work) */
+  --brand-accent:        var(--brand-logo-yellow);
+  --brand-red:           var(--brand-logo-red);
+  --brand-blue:          var(--brand-logo-blue);
+  --brand-green:         var(--brand-logo-green);
+
+  /* Digital / typography (corporate site — not in logo mark) */
+  --brand-magenta:       #75238b;
+  --brand-magenta-light: #8f3fb0;
+  --brand-secondary:     #1a2e4a;
+  --brand-navy-dark:     #0f1f33;
+  --brand-text-muted:    #64748b;
+  --brand-surface:       #f7f9fc;
+  --brand-radius:        10px;
+
+  --brand-font-body:    "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --brand-font-heading: "Plus Jakarta Sans", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Mi Formación — brand-aware primary button */
+.mf-btn-primary {
+  background-color: var(--brand-primary);
+  color: #ffffff;
+}
+.mf-btn-primary:hover {
+  background-color: var(--brand-primary-dark);
+}
+
+/* Mi Formación — Inicio mission-control landing */
+.inicio-hero {
+  background: var(--brand-surface, #f7f9fc);
+  border-color: color-mix(in srgb, var(--brand-primary, #833d8e) 18%, #e4e4e7);
+}
+.inicio-recientes {
+  border-color: color-mix(in srgb, var(--brand-primary, #833d8e) 28%, #e4e4e7);
+}
+.inicio-recent-track {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.inicio-recent-card {
+  scroll-snap-align: start;
+  flex: 0 0 16rem;
+  max-width: 16rem;
+}
+.inicio-progress-fill {
+  background-color: var(--brand-primary);
+}
+
+/* Mi Formación — sortable table headers */
+[data-testid="equipo-table"] thead th {
+  text-align: center;
+  vertical-align: middle;
+}
+[data-testid="equipo-table"] tbody td {
+  text-align: left;
+  vertical-align: middle;
+}
+[data-testid="equipo-table"] thead .mf-table-sort-btn {
+  width: 100%;
+  justify-content: center;
+}
+.mf-table-sort-btn--active {
+  color: var(--brand-primary);
+}
+.mf-table-sort-btn--active .mf-table-sort-icons svg {
+  opacity: 1;
+  stroke: var(--brand-primary);
+}
+
+/* Mi Formación — locked course cards */
+.course-card-locked {
+  opacity: 0.65;
+}
+.course-card-locked [data-mf-acceder]:disabled {
+  pointer-events: none;
+}
+
+/* Mi Formación — Biblioteca resource cards (icon-led; not course cover cards) */
+.resource-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 5rem;
+  border-radius: var(--brand-radius, 0.5rem);
+}
+.resource-card-icon .heroicon-lg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.resource-card-icon svg {
+  color: inherit;
+}
+/* Content type → logo palette (documento = blue, video = green, imagen = yellow) */
+.resource-card[data-mf-resource-type="documento"] {
+  --resource-type-color: var(--brand-blue);
+}
+.resource-card[data-mf-resource-type="video"] {
+  --resource-type-color: var(--brand-green);
+}
+.resource-card[data-mf-resource-type="imagen"] {
+  --resource-type-color: var(--brand-logo-yellow);
+}
+.resource-card[data-mf-resource-type] .resource-card-icon {
+  background: color-mix(in srgb, var(--resource-type-color) 18%, var(--brand-surface, #f7f9fc));
+  color: var(--resource-type-color);
+}
+.resource-card[data-mf-resource-type] .resource-type-chip {
+  background: color-mix(in srgb, var(--resource-type-color) 12%, #ffffff);
+  color: var(--resource-type-color);
+}

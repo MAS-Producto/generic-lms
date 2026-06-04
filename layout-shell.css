@@ -1,0 +1,22 @@
+/* New app layout shell — linked from layout-*.html in this folder.
+   Grid/rail layout uses Tailwind classes on #appRailShell; this file covers
+   viewport lock and sim-bar scroll padding when css/styles.css is absent. */
+
+html.app-shell {
+  height: 100%;
+}
+
+body.app-shell {
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+body.app-shell:has(.sim-bar) [data-app-scroll] {
+  padding-bottom: 3rem;
+}
+
+/* Mobile: rail shell must stack header above main (matches inicio.html flex-col) */
+#appRailShell.app-rail-shell {
+  flex-direction: column;
+}
