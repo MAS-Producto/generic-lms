@@ -214,11 +214,20 @@ svg.heroicon.hidden {
   align-items: center;
   width: 100%;
 }
+.app-rail-shell__logo-mark {
+  display: none;
+}
 
 /* Collapsed rail (icon-only sidebar) */
 .app-rail-shell--collapsed .app-rail-shell__logo {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+.app-rail-shell--collapsed .app-rail-shell__logo-full {
+  display: none;
+}
+.app-rail-shell--collapsed .app-rail-shell__logo-mark {
+  display: block;
 }
 .app-rail-shell--collapsed .app-rail-shell__logo img {
   height: 1.5rem;
@@ -236,6 +245,13 @@ svg.heroicon.hidden {
 }
 .app-rail-shell--collapsed .app-rail-shell__aside hr {
   display: none;
+}
+
+/* Sidebar nav — active item uses brand color */
+[data-mf-nav].mf-nav-active {
+  background-color: color-mix(in srgb, var(--brand-primary) 14%, white);
+  color: var(--brand-primary);
+  font-weight: 500;
 }
 
 .sim-bar .sim-bar-btn {

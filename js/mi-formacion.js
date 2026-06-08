@@ -958,8 +958,7 @@
       return '<section data-mf-grupo-section="' + ag.slug + '" data-testid="mis-cursos-section-' + ag.slug + '" class="mf-carousel-section mis-cursos-section mb-6 rounded-lg border p-6">' +
         '<div class="flex flex-wrap items-start justify-between gap-3">' +
         '<div class="min-w-0">' +
-        '<h2 class="text-lg font-semibold text-gray-900" style="font-family: var(--brand-font-heading)">' + ag.name + '</h2>' +
-        '<p class="text-sm text-gray-500 mt-0.5">' + ag.description + '</p></div>' +
+        '<h2 class="text-lg font-semibold text-gray-900" style="font-family: var(--brand-font-heading)">' + ag.name + '</h2></div>' +
         '<div class="flex items-center gap-2 shrink-0">' +
         '<a href="' + grupoPageUrl(ag.slug) + '" class="mf-btn-secondary">Ver todos</a>' +
         '<button type="button" data-mf-grupo-carousel-prev class="mf-btn-icon" aria-label="Desplazar cursos anteriores">' + CAROUSEL_CHEV_LEFT + '</button>' +
@@ -1210,9 +1209,7 @@
     var activeIds = map[page] || [];
     qsa('[data-mf-nav]').forEach(function (link) {
       var on = activeIds.indexOf(link.id) >= 0;
-      link.classList.toggle('bg-sidebar-accent', on);
-      link.classList.toggle('text-sidebar-foreground', on);
-      link.classList.toggle('font-medium', on);
+      link.classList.toggle('mf-nav-active', on);
       link.classList.toggle('text-muted-foreground', !on);
       if (on) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');

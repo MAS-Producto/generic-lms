@@ -33,6 +33,8 @@
 | Empty state | centered dashed-border block + heading + helper + CTA per 007 |
 | Grupo carousel section | `.mf-carousel-section` bordered card (same as Últimos vistos); `.mf-btn-secondary` **Ver todos** |
 | Mis cursos nav icon | Heroicons `academic-cap` |
+| Mis mallas nav icon | Heroicons `map` |
+| Biblioteca nav icon | Heroicons `building-library` (official v2 outline path) |
 | Progress ring | Single-segment SVG ring (Inicio hero) |
 | Instruction banner | removed — sim-bar only (no per-page instruction panels) |
 
@@ -148,7 +150,7 @@
 - Page description (org-agnostic; §7.2.2).
 - **One section per assigned grupo** (fixture order: Inducción → Cursos normativos → Formación complementaria in demo), **stacked vertically** as `.mf-carousel-section` bordered cards (same border as Inicio hero / Últimos vistos).
 - Each section follows the **Últimos vistos** carousel pattern:
-  - **Header row:** title + helper (left); **Ver todos** (`.mf-btn-secondary`) + prev/next (`mf-btn-icon`) (right cluster)
+  - **Header row:** title (left); **Ver todos** (`.mf-btn-secondary`) + prev/next (`mf-btn-icon`) (right cluster)
   - **Horizontal strip** (`inicio-recent-track`) with **all cursos** in that grupo (full scroll; no card cap)
   - **Ver todos** → `grupo.html?grupo={slug}`
 - Same course cards as today: cover 16:9, categoría chip, estado chip, **Ver más** modal, **Acceder**, bookmark toggle; sim-bar drives estados and within-grupo locks per grupo config.
@@ -525,7 +527,7 @@ Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
 |-------|---------|
 | `slug` | URL param (`induccion`, `cursos-normativos`, `formacion-complementaria`) |
 | `name` | Display label (sidebar-agnostic grupo name) |
-| `description` | Section helper on **Mis cursos** + page description on `grupo.html` |
+| `description` | Page description on `grupo.html` only (not shown on Mis cursos carousel sections) |
 | `locksEnabled` | Whether within-grupo prerequisite locks apply |
 | `courseIds` | Ordered curso IDs in that grupo |
 
@@ -820,6 +822,12 @@ Diagnóstico ──► Ejecución ──► Certificación
 | 2 | 2026-06-08 | Mi perfil insignias: text glyphs → Heroicons inside colored circles (§4.7, §7.7) |
 | 2 | 2026-06-08 | Sidebar collapse toggle: `svg.heroicon.hidden` CSS fix so chevron reflects next state (collapse ← / expand →) instead of showing both icons (§10) |
 | 2 | 2026-06-08 | Carousel sections: Últimos vistos border aligned to hero (`border` + brand tint); `.mf-carousel-section` shared on Inicio and Mis cursos grupo carousels (§10 design registry) |
+| 2 | 2026-06-08 | Collapsed sidebar rail: full logo → brand isotype (`assets/images/isotype.svg`); expanded rail unchanged (§10) |
+| 2 | 2026-06-08 | Sidebar active nav item: brand primary tint + text (`.mf-nav-active`) on desktop rail and mobile drawer (§10) |
+| 2 | 2026-06-08 | Mis mallas sidebar icon: Heroicons `map` (official v2 folded-map path) on all §10 screens (§10 design registry) |
+| 2 | 2026-06-08 | Mobile drawer nav: aligned Heroicons with desktop rail on all §10 screens (§10) |
+| 2 | 2026-06-08 | Biblioteca sidebar icon: replaced truncated path with official Heroicons v2 `building-library` outline on all §10 screens (§10 design registry) |
+| 2 | 2026-06-08 | Mis cursos carousel sections: removed per-grupo description under section title; descriptions remain on `grupo.html` only (§4.3, §9) |
 
 ---
 
