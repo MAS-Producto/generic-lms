@@ -383,7 +383,7 @@ Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
 
 ### 7.5 Notifications
 
-- Summary (dropdown heading): *Recordatorios de formación obligatoria*
+- Summary (dropdown heading): *Recordatorios*
 - Empty: *No tienes recordatorios pendientes.*
 - Links: `grupo.html?grupo={slug}` (assigned grupos), `malla.html?malla={slug}` (assigned mallas)
 - Badge count derives from progress sim
@@ -828,6 +828,8 @@ Diagnóstico ──► Ejecución ──► Certificación
 | 2 | 2026-06-08 | Mobile drawer nav: aligned Heroicons with desktop rail on all §10 screens (§10) |
 | 2 | 2026-06-08 | Biblioteca sidebar icon: replaced truncated path with official Heroicons v2 `building-library` outline on all §10 screens (§10 design registry) |
 | 2 | 2026-06-08 | Mis cursos carousel sections: removed per-grupo description under section title; descriptions remain on `grupo.html` only (§4.3, §9) |
+| 3 | 2026-06-08 | Notifications dropdown heading shortened to *Recordatorios* (§7.5) |
+| 4 | 2026-06-08 | Sim-bar restyled with neutral gray palette (decoupled from `--brand-primary`) |
 
 ---
 
