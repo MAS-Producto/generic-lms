@@ -35,14 +35,106 @@
     '100': ['IND-6', 'NOR-8', 'MLL-9', 'COM-6']
   };
 
-  var GRUPOS = {
-    induccion: { total: 6, page: 'induccion.html', label: 'Inducción' },
-    normativos: { total: 8, page: 'cursos-normativos.html', label: 'Cursos normativos' },
-    complementaria: { total: 6, page: 'formacion-complementaria.html', label: 'Formación complementaria' },
-    malla: { total: 9, page: 'mallas.html', label: 'Mallas' }
+  /** Achievement insignias earned per sim-bar level (prototype fixture; production rules TBD). */
+  var INSIGNIAS_BY_LEVEL = {
+    '0': [],
+    '45': ['primer-paso', 'velocista', 'sobresaliente', 'explorador', 'maraton'],
+    '100': ['primer-paso', 'velocista', 'sobresaliente', 'perfeccionista', 'constancia', 'explorador', 'maraton', 'al-dia']
   };
 
-  var MALLA_TABS = ['fundamentos', 'desarrollo', 'liderazgo', 'evaluacion'];
+  var ASSIGNED_GRUPOS = [
+    {
+      slug: 'induccion',
+      key: 'induccion',
+      name: 'Inducción',
+      description: 'Cursos de bienvenida e integración para nuevos colaboradores. Los cursos se desbloquean en secuencia dentro de este grupo.',
+      locksEnabled: true,
+      courseIds: ['IND-1', 'IND-2', 'IND-3', 'IND-4', 'IND-5', 'IND-6']
+    },
+    {
+      slug: 'cursos-normativos',
+      key: 'normativos',
+      name: 'Cursos normativos',
+      description: 'Cursos obligatorios de compliance, ética, seguridad y normativa corporativa. Debes completarlos según el orden de prerrequisitos.',
+      locksEnabled: true,
+      courseIds: ['NOR-1', 'NOR-2', 'NOR-3', 'NOR-4', 'NOR-5', 'NOR-6', 'NOR-7', 'NOR-8']
+    },
+    {
+      slug: 'formacion-complementaria',
+      key: 'complementaria',
+      name: 'Formación complementaria',
+      description: 'Cursos complementarios obligatorios sin bloqueos entre ellos. Puedes acceder a cualquier curso cuando lo necesites.',
+      locksEnabled: false,
+      courseIds: ['COM-1', 'COM-2', 'COM-3', 'COM-4', 'COM-5', 'COM-6']
+    }
+  ];
+
+  function grupoPageUrl(slug) {
+    return 'grupo.html?grupo=' + encodeURIComponent(slug);
+  }
+
+  function mallaPageUrl(slug) {
+    return 'malla.html?malla=' + encodeURIComponent(slug);
+  }
+
+  var ASSIGNED_MALLAS = [
+    {
+      slug: 'programa-liderazgo',
+      name: 'Programa de Liderazgo',
+      description: 'Avanza por fases y completa los prerrequisitos de cada etapa.',
+      phases: [
+        { tab: 'fundamentos', label: 'Fundamentos', upstreamTab: null, courseIds: ['MLL-1', 'MLL-2', 'MLL-3', 'MLL-4'] },
+        { tab: 'desarrollo', label: 'Desarrollo', upstreamTab: 'fundamentos', courseIds: ['MLL-5', 'MLL-6'] },
+        { tab: 'liderazgo', label: 'Liderazgo', upstreamTab: 'desarrollo', courseIds: ['MLL-7', 'MLL-8'] },
+        { tab: 'evaluacion', label: 'Evaluación', upstreamTab: 'desarrollo', courseIds: ['MLL-9'] }
+      ]
+    },
+    {
+      slug: 'gestion-proyectos',
+      name: 'Gestión de proyectos',
+      description: 'Metodología y herramientas para planificar, ejecutar y cerrar proyectos corporativos.',
+      phases: [
+        { tab: 'diagnostico', label: 'Diagnóstico', upstreamTab: null, courseIds: ['MGP-1', 'MGP-2'] },
+        { tab: 'ejecucion', label: 'Ejecución', upstreamTab: 'diagnostico', courseIds: ['MGP-3', 'MGP-4'] },
+        { tab: 'certificacion', label: 'Certificación', upstreamTab: 'ejecucion', courseIds: ['MGP-5'] }
+      ]
+    }
+  ];
+
+  var GRUPOS = {
+    induccion: { total: 6, page: grupoPageUrl('induccion'), slug: 'induccion', label: 'Inducción' },
+    normativos: { total: 8, page: grupoPageUrl('cursos-normativos'), slug: 'cursos-normativos', label: 'Cursos normativos' },
+    complementaria: { total: 6, page: grupoPageUrl('formacion-complementaria'), slug: 'formacion-complementaria', label: 'Formación complementaria' },
+    malla: { total: 14, page: mallaPageUrl('programa-liderazgo'), slug: 'programa-liderazgo', label: 'Programa de Liderazgo' }
+  };
+
+  function getAssignedGrupos() {
+    return ASSIGNED_GRUPOS.slice();
+  }
+
+  function getAssignedGrupoBySlug(slug) {
+    if (!slug) return null;
+    return ASSIGNED_GRUPOS.find(function (g) { return g.slug === slug; }) || null;
+  }
+
+  function getAssignedGrupoByKey(key) {
+    return ASSIGNED_GRUPOS.find(function (g) { return g.key === key; }) || null;
+  }
+
+  function getAssignedMallas() {
+    return ASSIGNED_MALLAS.slice();
+  }
+
+  function getAssignedMallaBySlug(slug) {
+    if (!slug) return null;
+    return ASSIGNED_MALLAS.find(function (m) { return m.slug === slug; }) || null;
+  }
+
+  function isGrupoLocksEnabled(grupoKey) {
+    var ag = getAssignedGrupoByKey(grupoKey);
+    if (ag) return ag.locksEnabled;
+    return grupoKey === 'malla';
+  }
 
   /**
    * Prototype 16:9 covers — local placeholders in assets/images/courses/{id}.jpg
@@ -80,15 +172,21 @@
     'COM-5': { grupo: 'complementaria', tab: null, title: 'Gestión del tiempo', categoria: 'Desarrollo profesional', duration: '1 h', prereqs: [], desc: 'Priorización y organización del trabajo.', noLock: true },
     'COM-6': { grupo: 'complementaria', tab: null, title: 'Balance vida-trabajo', categoria: 'Bienestar', duration: '45 min', prereqs: [], desc: 'Estrategias de equilibrio personal y laboral.', noLock: true },
 
-    'MLL-1': { grupo: 'malla', tab: 'fundamentos', title: 'Liderazgo personal', categoria: 'Fundamentos', duration: '2 h', prereqs: [], desc: 'Autoconocimiento y estilo de liderazgo personal.' },
-    'MLL-2': { grupo: 'malla', tab: 'fundamentos', title: 'Comunicación asertiva', categoria: 'Fundamentos', duration: '1,5 h', prereqs: ['MLL-1'], desc: 'Comunicación clara y asertiva para líderes.' },
-    'MLL-3': { grupo: 'malla', tab: 'fundamentos', title: 'Gestión del cambio', categoria: 'Fundamentos', duration: '1,5 h', prereqs: ['MLL-1'], desc: 'Gestión del cambio en equipos y organizaciones.' },
-    'MLL-4': { grupo: 'malla', tab: 'fundamentos', title: 'Toma de decisiones', categoria: 'Fundamentos', duration: '2 h', prereqs: ['MLL-2', 'MLL-3'], desc: 'Marco para decisiones efectivas en liderazgo.' },
-    'MLL-5': { grupo: 'malla', tab: 'desarrollo', title: 'Coaching para líderes', categoria: 'Desarrollo', duration: '2 h', prereqs: [], desc: 'Técnicas de coaching aplicadas al liderazgo.' },
-    'MLL-6': { grupo: 'malla', tab: 'desarrollo', title: 'Gestión de equipos remotos', categoria: 'Desarrollo', duration: '1,5 h', prereqs: ['MLL-5'], desc: 'Liderazgo de equipos distribuidos y remotos.' },
-    'MLL-7': { grupo: 'malla', tab: 'liderazgo', title: 'Negociación avanzada', categoria: 'Liderazgo', duration: '2 h', prereqs: [], desc: 'Negociación estratégica para mandos medios.' },
-    'MLL-8': { grupo: 'malla', tab: 'liderazgo', title: 'Planificación estratégica', categoria: 'Liderazgo', duration: '2,5 h', prereqs: [], desc: 'Planificación y ejecución estratégica.' },
-    'MLL-9': { grupo: 'malla', tab: 'evaluacion', title: 'Evaluación final — Malla Líder', categoria: 'Evaluación', duration: '1 h', prereqs: [], desc: 'Evaluación integradora de la Malla Líder — Ruta 2025.' }
+    'MLL-1': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'fundamentos', title: 'Liderazgo personal', categoria: 'Fundamentos', duration: '2 h', prereqs: [], desc: 'Autoconocimiento y estilo de liderazgo personal.' },
+    'MLL-2': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'fundamentos', title: 'Comunicación asertiva', categoria: 'Fundamentos', duration: '1,5 h', prereqs: ['MLL-1'], desc: 'Comunicación clara y asertiva para líderes.' },
+    'MLL-3': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'fundamentos', title: 'Gestión del cambio', categoria: 'Fundamentos', duration: '1,5 h', prereqs: ['MLL-1'], desc: 'Gestión del cambio en equipos y organizaciones.' },
+    'MLL-4': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'fundamentos', title: 'Toma de decisiones', categoria: 'Fundamentos', duration: '2 h', prereqs: ['MLL-2', 'MLL-3'], desc: 'Marco para decisiones efectivas en liderazgo.' },
+    'MLL-5': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'desarrollo', title: 'Coaching para líderes', categoria: 'Desarrollo', duration: '2 h', prereqs: [], desc: 'Técnicas de coaching aplicadas al liderazgo.' },
+    'MLL-6': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'desarrollo', title: 'Gestión de equipos remotos', categoria: 'Desarrollo', duration: '1,5 h', prereqs: ['MLL-5'], desc: 'Liderazgo de equipos distribuidos y remotos.' },
+    'MLL-7': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'liderazgo', title: 'Negociación avanzada', categoria: 'Liderazgo', duration: '2 h', prereqs: [], desc: 'Negociación estratégica para mandos medios.' },
+    'MLL-8': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'liderazgo', title: 'Planificación estratégica', categoria: 'Liderazgo', duration: '2,5 h', prereqs: [], desc: 'Planificación y ejecución estratégica.' },
+    'MLL-9': { grupo: 'malla', mallaSlug: 'programa-liderazgo', tab: 'evaluacion', title: 'Evaluación final — Programa de Liderazgo', categoria: 'Evaluación', duration: '1 h', prereqs: [], desc: 'Evaluación integradora del Programa de Liderazgo.' },
+
+    'MGP-1': { grupo: 'malla', mallaSlug: 'gestion-proyectos', tab: 'diagnostico', title: 'Fundamentos de gestión de proyectos', categoria: 'Diagnóstico', duration: '1,5 h', prereqs: [], desc: 'Conceptos base, roles y ciclo de vida de un proyecto.' },
+    'MGP-2': { grupo: 'malla', mallaSlug: 'gestion-proyectos', tab: 'diagnostico', title: 'Identificación de stakeholders', categoria: 'Diagnóstico', duration: '1 h', prereqs: ['MGP-1'], desc: 'Mapa de partes interesadas y matriz de influencia.' },
+    'MGP-3': { grupo: 'malla', mallaSlug: 'gestion-proyectos', tab: 'ejecucion', title: 'Planificación y cronograma', categoria: 'Ejecución', duration: '2 h', prereqs: [], desc: 'WBS, ruta crítica y seguimiento de avance.' },
+    'MGP-4': { grupo: 'malla', mallaSlug: 'gestion-proyectos', tab: 'ejecucion', title: 'Gestión de riesgos en proyectos', categoria: 'Ejecución', duration: '1,5 h', prereqs: ['MGP-3'], desc: 'Identificación, análisis y respuesta a riesgos.' },
+    'MGP-5': { grupo: 'malla', mallaSlug: 'gestion-proyectos', tab: 'certificacion', title: 'Evaluación — Gestión de proyectos', categoria: 'Certificación', duration: '1 h', prereqs: [], desc: 'Evaluación integradora de la ruta de gestión de proyectos.' }
   };
 
   var APPROVED_BY_LEVEL = {
@@ -97,7 +195,8 @@
       'IND-1', 'IND-2', 'IND-3', 'IND-4',
       'NOR-1', 'NOR-2', 'NOR-3', 'NOR-4',
       'COM-1',
-      'MLL-1', 'MLL-2', 'MLL-3', 'MLL-4'
+      'MLL-1', 'MLL-2', 'MLL-3', 'MLL-4',
+      'MGP-1'
     ],
     '100': Object.keys(COURSES)
   };
@@ -138,7 +237,7 @@
       function wouldBeLocked(id) {
         var c = COURSES[id];
         if (!c || c.noLock || approved.has(id)) return false;
-        if (c.grupo === 'malla' && !wouldMallaTabUnlockAtLevel(c.tab, level, approved)) return true;
+        if (c.grupo === 'malla' && !wouldMallaTabUnlockAtLevel(c.mallaSlug, c.tab, level, approved)) return true;
         if (!c.prereqs || !c.prereqs.length) return false;
         return c.prereqs.some(function (p) { return !approved.has(p); });
       }
@@ -151,11 +250,24 @@
     });
   }
 
-  function wouldMallaTabUnlockAtLevel(tab, level, approvedSet) {
-    if (tab === 'fundamentos') return true;
-    var upstream = MALLA_TAB_UPSTREAM[tab];
+  function getMallaPhaseUpstream(mallaSlug, tab) {
+    var am = getAssignedMallaBySlug(mallaSlug);
+    if (!am) return null;
+    var phase = am.phases.find(function (p) { return p.tab === tab; });
+    return phase && phase.upstreamTab ? phase.upstreamTab : null;
+  }
+
+  function getMallaPhaseLabel(mallaSlug, tab) {
+    var am = getAssignedMallaBySlug(mallaSlug);
+    if (!am) return tab;
+    var phase = am.phases.find(function (p) { return p.tab === tab; });
+    return phase ? phase.label : tab;
+  }
+
+  function wouldMallaTabUnlockAtLevel(mallaSlug, tab, level, approvedSet) {
+    var upstream = getMallaPhaseUpstream(mallaSlug, tab);
     if (!upstream) return true;
-    var ids = coursesInMallaTab(upstream);
+    var ids = coursesInMallaTab(mallaSlug, upstream);
     return ids.length > 0 && ids.every(function (id) { return approvedSet.has(id); });
   }
 
@@ -166,19 +278,6 @@
     'en-proceso': 'En proceso',
     aprobado: 'Aprobado',
     reprobado: 'Reprobado'
-  };
-
-  var MALLA_TAB_UPSTREAM = {
-    desarrollo: 'fundamentos',
-    liderazgo: 'desarrollo',
-    evaluacion: 'desarrollo'
-  };
-
-  var MALLA_TAB_LABELS = {
-    fundamentos: 'Fundamentos',
-    desarrollo: 'Desarrollo',
-    liderazgo: 'Liderazgo',
-    evaluacion: 'Evaluación'
   };
 
   var grupoPagination = { page: 1, pageSize: 12 };
@@ -253,23 +352,35 @@
     });
   }
 
-  function coursesInMallaTab(tab) {
+  function coursesInMallaTab(mallaSlug, tab) {
     return Object.keys(COURSES).filter(function (id) {
       var c = COURSES[id];
-      return c.grupo === 'malla' && c.tab === tab;
+      return c.grupo === 'malla' && c.mallaSlug === mallaSlug && c.tab === tab;
     });
   }
 
-  function isTabComplete(tab) {
-    var ids = coursesInMallaTab(tab);
+  function isMallaTabComplete(mallaSlug, tab) {
+    var ids = coursesInMallaTab(mallaSlug, tab);
     return ids.length > 0 && ids.every(function (id) { return isApproved(id); });
   }
 
-  function isMallaTabUnlocked(tab) {
-    if (tab === 'fundamentos') return true;
-    var upstream = MALLA_TAB_UPSTREAM[tab];
+  function isMallaTabUnlocked(mallaSlug, tab) {
+    var upstream = getMallaPhaseUpstream(mallaSlug, tab);
     if (!upstream) return true;
-    return isTabComplete(upstream);
+    return isMallaTabComplete(mallaSlug, upstream);
+  }
+
+  function mallaCourseIds(slug) {
+    var am = getAssignedMallaBySlug(slug);
+    if (!am) return [];
+    return am.phases.reduce(function (acc, phase) {
+      return acc.concat(phase.courseIds);
+    }, []);
+  }
+
+  function mallaComplete(slug) {
+    var ids = mallaCourseIds(slug);
+    return ids.length > 0 && ids.every(function (id) { return isApproved(id); });
   }
 
   function prereqTitles(prereqs) {
@@ -287,9 +398,10 @@
   function isCourseLocked(id) {
     var c = COURSES[id];
     if (!c) return false;
+    if (c.grupo !== 'malla' && !isGrupoLocksEnabled(c.grupo)) return false;
     if (c.noLock) return false;
     if (isCourseEngaged(id)) return false;
-    if (c.grupo === 'malla' && !isMallaTabUnlocked(c.tab)) return true;
+    if (c.grupo === 'malla' && !isMallaTabUnlocked(c.mallaSlug, c.tab)) return true;
     if (!c.prereqs || !c.prereqs.length) return false;
     return c.prereqs.some(function (p) { return !isApproved(p); });
   }
@@ -299,7 +411,7 @@
   }
 
   function totalMandatory() {
-    return 29;
+    return Object.keys(COURSES).length;
   }
 
   function totalApproved() {
@@ -337,10 +449,29 @@
     return 'sin-actividad';
   }
 
+  function getGrupoSlugFromUrl() {
+    try {
+      return new URLSearchParams(window.location.search).get('grupo');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getMallaSlugFromUrl() {
+    try {
+      return new URLSearchParams(window.location.search).get('malla');
+    } catch (e) {
+      return null;
+    }
+  }
+
   function getGrupoKeyForPage() {
     var page = document.body.getAttribute('data-mf-page');
-    var map = { induccion: 'induccion', normativos: 'normativos', complementaria: 'complementaria' };
-    return map[page] || null;
+    if (page === 'grupo') {
+      var ag = getAssignedGrupoBySlug(getGrupoSlugFromUrl());
+      return ag ? ag.key : null;
+    }
+    return null;
   }
 
   function statusLabel(id) {
@@ -396,14 +527,17 @@
   function courseGrupoLabel(id) {
     var c = COURSES[id];
     if (!c) return '';
-    if (c.grupo === 'malla') return GRUPOS.malla.label;
+    if (c.grupo === 'malla') {
+      var am = getAssignedMallaBySlug(c.mallaSlug);
+      return am ? am.name : GRUPOS.malla.label;
+    }
     return GRUPOS[c.grupo] ? GRUPOS[c.grupo].label : '';
   }
 
   function courseGrupoPage(id) {
     var c = COURSES[id];
     if (!c) return 'inicio.html';
-    if (c.grupo === 'malla') return GRUPOS.malla.page;
+    if (c.grupo === 'malla' && c.mallaSlug) return mallaPageUrl(c.mallaSlug);
     return GRUPOS[c.grupo] ? GRUPOS[c.grupo].page : 'inicio.html';
   }
 
@@ -718,6 +852,291 @@
     });
   }
 
+  var CAROUSEL_CHEV_LEFT = '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+  var CAROUSEL_CHEV_RIGHT = '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+  var LOCK_SVG_SM = '<svg class="heroicon heroicon-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>';
+
+  function renderCarouselCourseCard(id) {
+    var c = COURSES[id];
+    if (!c) return '';
+    return '<article data-mf-course="' + id + '" data-testid="grupo-carousel-' + id + '" class="inicio-recent-card rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">' +
+      '<div class="aspect-video bg-gray-200 relative">' +
+      '<img src="' + courseCoverUrl(id) + '" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover">' +
+      '<span data-mf-lock-badge class="hidden absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-gray-900/85 text-white text-xs px-2 py-1">' + LOCK_SVG_SM + ' Bloqueado</span></div>' +
+      '<div class="p-4 flex flex-col flex-1 min-h-0">' +
+      '<div class="flex flex-wrap gap-2 mb-2">' +
+      '<span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">' + c.categoria + '</span>' +
+      '<span data-mf-status-chip class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">Pendiente</span></div>' +
+      '<h3 class="font-medium text-gray-900 line-clamp-2 leading-snug">' + c.title + '</h3>' +
+      '<p class="text-sm text-gray-500 mt-1">' + c.duration + '</p>' +
+      '<div class="mt-auto pt-4 flex gap-2">' +
+      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="mf-btn-secondary flex-1 w-full">Ver más</button>' +
+      '<button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>' +
+      '</div></div></article>';
+  }
+
+  function renderGrupoGridCourseCard(id) {
+    var c = COURSES[id];
+    if (!c) return '';
+    return '<article data-mf-course="' + id + '" class="rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">' +
+      '<div class="aspect-video bg-gray-200 relative">' +
+      '<img src="' + courseCoverUrl(id) + '" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover">' +
+      '<span data-mf-lock-badge class="hidden absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-gray-900/85 text-white text-xs px-2 py-1">' + LOCK_SVG_SM + ' Bloqueado</span></div>' +
+      '<div class="p-4 flex flex-col flex-1">' +
+      '<div class="flex flex-wrap gap-2 mb-2">' +
+      '<span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">' + c.categoria + '</span>' +
+      '<span data-mf-status-chip class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">Pendiente</span></div>' +
+      '<h3 class="font-medium text-gray-900">' + c.title + '</h3>' +
+      '<p class="text-sm text-gray-500 mt-1">' + c.duration + '</p>' +
+      '<div class="mt-auto pt-4 flex gap-2">' +
+      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="mf-btn-secondary flex-1 w-full">Ver más</button>' +
+      '<button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>' +
+      '</div></div></article>';
+  }
+
+  function updateGrupoCarouselNavButtons(track, slug) {
+    var section = track && track.closest('[data-mf-grupo-section]');
+    if (!section) return;
+    var prev = section.querySelector('[data-mf-grupo-carousel-prev]');
+    var next = section.querySelector('[data-mf-grupo-carousel-next]');
+    if (!prev || !next) return;
+    var hasOverflow = track.scrollWidth > track.clientWidth + 2;
+    prev.disabled = !hasOverflow;
+    next.disabled = !hasOverflow;
+  }
+
+  var misCursosCarouselResizeBound = false;
+
+  function bindMisCursosCarousels() {
+    var container = qs('[data-mf-mis-cursos-sections]');
+    if (!container) return;
+    var step = 272;
+    qsa('[data-mf-grupo-section]', container).forEach(function (section) {
+      var track = section.querySelector('[data-mf-grupo-track]');
+      var prev = section.querySelector('[data-mf-grupo-carousel-prev]');
+      var next = section.querySelector('[data-mf-grupo-carousel-next]');
+      if (!track) return;
+      if (prev) {
+        prev.addEventListener('click', function () {
+          track.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+      }
+      if (next) {
+        next.addEventListener('click', function () {
+          track.scrollBy({ left: step, behavior: 'smooth' });
+        });
+      }
+      track.addEventListener('scroll', function () {
+        updateGrupoCarouselNavButtons(track);
+      });
+    });
+    if (!misCursosCarouselResizeBound) {
+      window.addEventListener('resize', function () {
+        var c = qs('[data-mf-mis-cursos-sections]');
+        if (!c) return;
+        qsa('[data-mf-grupo-track]', c).forEach(function (track) {
+          updateGrupoCarouselNavButtons(track);
+        });
+      });
+      misCursosCarouselResizeBound = true;
+    }
+  }
+
+  function renderMisCursosSections() {
+    var container = qs('[data-mf-mis-cursos-sections]');
+    var empty = qs('[data-mf-mis-cursos-empty]');
+    if (!container) return;
+    var grupos = getAssignedGrupos();
+    if (!grupos.length) {
+      container.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    container.innerHTML = grupos.map(function (ag) {
+      var cards = ag.courseIds.map(renderCarouselCourseCard).join('');
+      return '<section data-mf-grupo-section="' + ag.slug + '" data-testid="mis-cursos-section-' + ag.slug + '" class="mf-carousel-section mis-cursos-section mb-6 rounded-lg border p-6">' +
+        '<div class="flex flex-wrap items-start justify-between gap-3">' +
+        '<div class="min-w-0">' +
+        '<h2 class="text-lg font-semibold text-gray-900" style="font-family: var(--brand-font-heading)">' + ag.name + '</h2>' +
+        '<p class="text-sm text-gray-500 mt-0.5">' + ag.description + '</p></div>' +
+        '<div class="flex items-center gap-2 shrink-0">' +
+        '<a href="' + grupoPageUrl(ag.slug) + '" class="mf-btn-secondary">Ver todos</a>' +
+        '<button type="button" data-mf-grupo-carousel-prev class="mf-btn-icon" aria-label="Desplazar cursos anteriores">' + CAROUSEL_CHEV_LEFT + '</button>' +
+        '<button type="button" data-mf-grupo-carousel-next class="mf-btn-icon" aria-label="Desplazar cursos siguientes">' + CAROUSEL_CHEV_RIGHT + '</button>' +
+        '</div></div>' +
+        '<div data-mf-grupo-track="' + ag.slug + '" class="inicio-recent-track mt-4 flex gap-4 overflow-x-auto pb-2 scroll-smooth" tabindex="0" role="region" aria-label="Cursos de ' + ag.name + '">' + cards + '</div>' +
+        '</section>';
+    }).join('');
+    bindMisCursosCarousels();
+    qsa('[data-mf-grupo-track]', container).forEach(function (track) {
+      updateGrupoCarouselNavButtons(track);
+    });
+  }
+
+  function renderGrupoPageContent(ag) {
+    document.title = ag.name + ' — Mi formación';
+    var title = qs('[data-mf-grupo-title]');
+    var desc = qs('[data-mf-grupo-desc]');
+    var crumb = qs('[data-mf-grupo-breadcrumb-name]');
+    if (title) setText(title, ag.name);
+    if (desc) setText(desc, ag.description);
+    if (crumb) setText(crumb, ag.name);
+    var grid = qs('[data-testid="course-grid"]');
+    if (grid) {
+      grid.innerHTML = ag.courseIds.map(renderGrupoGridCourseCard).join('');
+    }
+  }
+
+  function initGrupoPage() {
+    if (document.body.getAttribute('data-mf-page') !== 'grupo') return true;
+    var ag = getAssignedGrupoBySlug(getGrupoSlugFromUrl());
+    if (!ag) {
+      window.location.replace('mis-cursos.html');
+      return false;
+    }
+    renderGrupoPageContent(ag);
+    return true;
+  }
+
+  var ACCORDION_CHEV_SVG = '<svg data-mf-accordion-chevron class="heroicon heroicon-sm shrink-0 text-gray-400 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>';
+
+  function renderMallaCompactRow(id, tabUnlocked) {
+    var c = COURSES[id];
+    if (!c) return '';
+    if (!tabUnlocked) {
+      return '<div class="mis-mallas-compact-row mis-mallas-compact-row--locked flex items-center gap-2 py-2 border-b border-gray-100 last:border-0" data-mf-course="' + id + '">' +
+        '<span class="flex-1 min-w-0 text-sm text-gray-400 truncate">' + c.title + '</span></div>';
+    }
+    return '<div class="mis-mallas-compact-row flex flex-wrap items-center gap-2 py-2 border-b border-gray-100 last:border-0" data-mf-course="' + id + '">' +
+      '<span class="flex-1 min-w-0 text-sm font-medium text-gray-900 truncate">' + c.title + '</span>' +
+      '<span data-mf-status-chip class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700 shrink-0">Pendiente</span>' +
+      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="mf-btn-secondary mf-btn-sm shrink-0">Ver más</button>' +
+      '<button type="button" data-mf-acceder class="mf-btn-primary mf-btn-sm shrink-0">Acceder</button></div>';
+  }
+
+  function mallaAccordionPanelId(mallaSlug, tab) {
+    return 'mf-malla-accordion-' + mallaSlug + '-' + tab;
+  }
+
+  function toggleMallaAccordion(trigger) {
+    if (!trigger) return;
+    var expanded = trigger.getAttribute('aria-expanded') === 'true';
+    var panelId = trigger.getAttribute('aria-controls');
+    var panel = panelId ? document.getElementById(panelId) : null;
+    trigger.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    if (panel) panel.classList.toggle('hidden', expanded);
+    var chev = trigger.querySelector('[data-mf-accordion-chevron]');
+    if (chev) chev.classList.toggle('mf-accordion-chevron--open', !expanded);
+  }
+
+  function renderMisMallasPhaseBlock(phase, mallaSlug) {
+    var tabUnlocked = isMallaTabUnlocked(mallaSlug, phase.tab);
+    var approved = countApprovedInMallaTab(mallaSlug, phase.tab);
+    var total = phase.courseIds.length;
+    var panelId = mallaAccordionPanelId(mallaSlug, phase.tab);
+    var lockIcon = tabUnlocked ? '' : '<span data-mf-accordion-lock class="inline-flex items-center text-gray-400" title="Fase bloqueada">' + LOCK_SVG_SM + '</span>';
+    var rows = phase.courseIds.map(function (id) {
+      return renderMallaCompactRow(id, tabUnlocked);
+    }).join('');
+    return '<div class="mf-accordion mis-mallas-accordion rounded-lg border border-gray-200 bg-white overflow-hidden" data-mf-malla-phase="' + phase.tab + '">' +
+      '<button type="button" data-mf-accordion-trigger class="mf-accordion-trigger w-full flex flex-wrap items-center gap-2 px-4 py-3 text-left text-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-inset" aria-expanded="false" aria-controls="' + panelId + '">' +
+      '<span class="inline-flex h-2 w-2 rounded-full shrink-0 ' + (tabUnlocked ? 'bg-[var(--brand-primary)]' : 'bg-gray-300') + '" aria-hidden="true"></span>' +
+      '<span class="font-semibold text-gray-900">' + phase.label + '</span>' +
+      '<span data-mf-accordion-count class="text-gray-500">' + approved + ' de ' + total + ' aprobados</span>' +
+      lockIcon +
+      '<span class="ml-auto">' + ACCORDION_CHEV_SVG + '</span>' +
+      '</button>' +
+      '<div id="' + panelId + '" class="mf-accordion-panel hidden border-t border-gray-200 px-4 py-2 mis-mallas-phase-courses" role="region" aria-label="' + phase.label + '">' + rows + '</div></div>';
+  }
+
+  function renderMisMallasSections() {
+    var container = qs('[data-mf-mis-mallas-sections]');
+    var empty = qs('[data-mf-mis-mallas-empty]');
+    if (!container) return;
+    var mallas = getAssignedMallas();
+    if (!mallas.length) {
+      container.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+    container.innerHTML = mallas.map(function (am) {
+      var phases = am.phases.map(function (phase) {
+        return renderMisMallasPhaseBlock(phase, am.slug);
+      }).join('');
+      return '<section data-mf-malla-section="' + am.slug + '" data-testid="mis-mallas-section-' + am.slug + '" class="mis-mallas-section rounded-lg border border-gray-200 bg-white p-4 sm:p-6">' +
+        '<div class="flex flex-wrap items-start justify-between gap-3 mb-4">' +
+        '<div class="min-w-0">' +
+        '<h2 class="text-lg font-semibold text-gray-900" style="font-family: var(--brand-font-heading)">' + am.name + '</h2>' +
+        '<p class="text-sm text-gray-500 mt-0.5">' + am.description + '</p></div>' +
+        '<div class="flex flex-wrap items-center gap-2 shrink-0">' +
+        '<a href="' + mallaPageUrl(am.slug) + '" class="mf-btn-secondary">Ver más</a></div></div>' +
+        '<div class="mis-mallas-accordions flex flex-col gap-2" data-testid="mis-mallas-accordions-' + am.slug + '">' + phases + '</div></section>';
+    }).join('');
+  }
+
+  function renderMallaGridCourseCard(id, phaseLabel) {
+    var c = COURSES[id];
+    if (!c) return '';
+    return '<article data-mf-course="' + id + '" class="rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">' +
+      '<div class="aspect-video bg-gray-200 relative">' +
+      '<img src="' + courseCoverUrl(id) + '" alt="" loading="lazy" decoding="async" class="w-full h-full object-cover">' +
+      '<span data-mf-lock-badge class="hidden absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-gray-900/85 text-white text-xs px-2 py-1">' + LOCK_SVG_SM + ' Bloqueado</span></div>' +
+      '<div class="p-4 flex flex-col flex-1">' +
+      '<div class="flex flex-wrap gap-2 mb-2">' +
+      '<span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">' + phaseLabel + '</span>' +
+      '<span data-mf-status-chip class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">Pendiente</span></div>' +
+      '<h3 class="font-medium text-gray-900">' + c.title + '</h3>' +
+      '<p class="text-sm text-gray-500 mt-1">' + c.duration + '</p>' +
+      '<div class="mt-auto pt-4 flex gap-2">' +
+      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="mf-btn-secondary flex-1 w-full">Ver más</button>' +
+      '<button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>' +
+      '</div></div></article>';
+  }
+
+  function renderMallaPageContent(am) {
+    document.title = am.name + ' — Mi formación';
+    var title = qs('[data-mf-malla-title]');
+    var desc = qs('[data-mf-malla-desc]');
+    var crumb = qs('[data-mf-malla-breadcrumb-name]');
+    if (title) setText(title, am.name);
+    if (desc) setText(desc, am.description);
+    if (crumb) setText(crumb, am.name);
+
+    var tabsEl = qs('[data-mf-malla-tabs]');
+    var panelsEl = qs('[data-mf-malla-panels]');
+    if (!tabsEl || !panelsEl) return;
+
+    var lockSvg = '<svg data-mf-tab-lock class="hidden malla-tab-lock-icon heroicon heroicon-sm shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>';
+    tabsEl.setAttribute('role', 'tablist');
+    tabsEl.className = 'flex flex-wrap gap-1 border-b border-gray-200 mb-6';
+    tabsEl.innerHTML = am.phases.map(function (phase, idx) {
+      var active = idx === 0;
+      return '<button type="button" data-mf-malla-tab="' + phase.tab + '" role="tab" aria-selected="' + (active ? 'true' : 'false') + '" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 ' +
+        (active ? 'border-gray-900 text-gray-900 malla-tab-active' : 'border-transparent text-gray-500') + '">' +
+        '<span>' + phase.label + '</span>' + lockSvg + '</button>';
+    }).join('');
+
+    panelsEl.innerHTML = am.phases.map(function (phase, idx) {
+      var cards = phase.courseIds.map(function (id) {
+        return renderMallaGridCourseCard(id, phase.label);
+      }).join('');
+      return '<div data-mf-malla-panel="' + phase.tab + '" class="' + (idx === 0 ? '' : 'hidden ') + 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="course-grid">' + cards + '</div>';
+    }).join('');
+  }
+
+  function initMallaPage() {
+    if (document.body.getAttribute('data-mf-page') !== 'malla') return true;
+    var am = getAssignedMallaBySlug(getMallaSlugFromUrl());
+    if (!am) {
+      window.location.replace('mis-mallas.html');
+      return false;
+    }
+    renderMallaPageContent(am);
+    return true;
+  }
+
   function pendingNotifications() {
     if (getLevel() === '100') return [];
     var items = [];
@@ -730,8 +1149,8 @@
         return;
       }
       if (!isApproved(id) && !isCourseLocked(id)) {
-        var page = c.grupo === 'malla' ? GRUPOS.malla.page : GRUPOS[c.grupo].page;
-        var grupo = c.grupo === 'malla' ? GRUPOS.malla.label : GRUPOS[c.grupo].label;
+        var page = c.grupo === 'malla' ? mallaPageUrl(c.mallaSlug) : GRUPOS[c.grupo].page;
+        var grupo = courseGrupoLabel(id);
         items.push({ id: id, title: c.title, page: page, grupo: grupo });
       }
     });
@@ -741,9 +1160,9 @@
   function lockMessage(id) {
     var c = COURSES[id];
     if (!c) return '';
-    if (c.grupo === 'malla' && !isMallaTabUnlocked(c.tab)) {
-      var up = MALLA_TAB_UPSTREAM[c.tab];
-      return 'Completa todos los cursos de ' + (MALLA_TAB_LABELS[up] || up) + ' para desbloquear esta sección.';
+    if (c.grupo === 'malla' && !isMallaTabUnlocked(c.mallaSlug, c.tab)) {
+      var up = getMallaPhaseUpstream(c.mallaSlug, c.tab);
+      return 'Completa todos los cursos de ' + getMallaPhaseLabel(c.mallaSlug, up) + ' para desbloquear esta sección.';
     }
     if (c.prereqs && c.prereqs.length) {
       return 'Completa ' + prereqTitles(c.prereqs).join(' y ') + ' para desbloquear este curso.';
@@ -779,10 +1198,10 @@
     if (!page) return;
     var map = {
       inicio: ['navInicio', 'mobNavInicio'],
-      induccion: ['navInduccion', 'mobNavInduccion'],
-      normativos: ['navNormativos', 'mobNavNormativos'],
-      complementaria: ['navComplementaria', 'mobNavComplementaria'],
-      mallas: ['navMallas', 'mobNavMallas'],
+      'mis-cursos': ['navCursos', 'mobNavCursos'],
+      grupo: ['navCursos', 'mobNavCursos'],
+      'mis-mallas': ['navMallas', 'mobNavMallas'],
+      malla: ['navMallas', 'mobNavMallas'],
       biblioteca: ['navBiblioteca', 'mobNavBiblioteca'],
       favoritos: ['navGuardados', 'mobNavGuardados'],
       perfil: ['navPerfil', 'mobNavPerfil'],
@@ -926,8 +1345,8 @@
     updateCongrats();
   }
 
-  function countApprovedInMallaTab(tab) {
-    return coursesInMallaTab(tab).filter(function (id) { return isApproved(id); }).length;
+  function countApprovedInMallaTab(mallaSlug, tab) {
+    return coursesInMallaTab(mallaSlug, tab).filter(function (id) { return isApproved(id); }).length;
   }
 
   function updateCongrats() {
@@ -1008,24 +1427,24 @@
   }
 
   function updateMallaTabs() {
+    var mallaSlug = getMallaSlugFromUrl();
+    if (!mallaSlug || !qs('[data-mf-malla-tabs]')) return;
+    var am = getAssignedMallaBySlug(mallaSlug);
+    if (!am) return;
+    var defaultTab = am.phases[0] ? am.phases[0].tab : '';
     var activeTab = document.querySelector('[data-mf-malla-tab].malla-tab-active');
-    var activeId = activeTab ? activeTab.getAttribute('data-mf-malla-tab') : 'fundamentos';
+    var activeId = activeTab ? activeTab.getAttribute('data-mf-malla-tab') : defaultTab;
 
     qsa('[data-mf-malla-tab]').forEach(function (btn) {
       var tab = btn.getAttribute('data-mf-malla-tab');
-      var unlocked = isMallaTabUnlocked(tab);
+      var unlocked = isMallaTabUnlocked(mallaSlug, tab);
       var lockIcon = btn.querySelector('[data-mf-tab-lock]');
       if (lockIcon) lockIcon.classList.toggle('hidden', unlocked);
-      btn.disabled = !unlocked;
-      btn.classList.toggle('opacity-50', !unlocked);
-      btn.classList.toggle('cursor-not-allowed', !unlocked);
-      btn.setAttribute('aria-disabled', unlocked ? 'false' : 'true');
-      if (!unlocked && tab === activeId) {
-        activeId = 'fundamentos';
-      }
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      btn.setAttribute('aria-disabled', 'false');
     });
 
-    if (!isMallaTabUnlocked(activeId)) activeId = 'fundamentos';
     switchMallaTab(activeId, true);
   }
 
@@ -1078,14 +1497,20 @@
     }
   }
 
+  function getEarnedInsignias() {
+    return new Set(INSIGNIAS_BY_LEVEL[getLevel()] || []);
+  }
+
   function updateInsignias() {
+    var earned = getEarnedInsignias();
     qsa('[data-mf-insignia]').forEach(function (el) {
-      var gk = el.getAttribute('data-mf-insignia');
-      var done = grupoComplete(gk);
+      var key = el.getAttribute('data-mf-insignia');
+      var done = earned.has(key);
       el.classList.toggle('opacity-40', !done);
       el.classList.toggle('grayscale', !done);
       var lock = el.querySelector('[data-mf-insignia-lock]');
       if (lock) lock.classList.toggle('hidden', done);
+      el.classList.toggle('mf-insignia-card--earned', done);
     });
   }
 
@@ -1100,14 +1525,21 @@
     updateGrupoProgress('complementaria');
     updateGrupoProgress('malla');
     updateCourseCards();
-    updateMallaTabs();
+    if (qs('[data-mf-malla-tabs]')) updateMallaTabs();
     updateNotifications();
     updateInsignias();
     renderPerfilProfile();
     renderHistorialTable();
     updateRecentCarousel();
+    renderMisCursosSections();
+    renderMisMallasSections();
+    updateCourseCards();
+    qsa('[data-mf-grupo-track]').forEach(function (track) {
+      updateGrupoCarouselNavButtons(track);
+    });
     applyGrupoCourseFilters(true);
     applyEquipoFilters(true);
+    if (modalCourseId) populateCourseModal(modalCourseId);
   }
 
   /* ── Modals ──────────────────────────────────────────────────────────── */
@@ -2120,37 +2552,103 @@
     applyBibliotecaFilters();
   }
 
-  function openCourseModal(id) {
+  var MODAL_CLOCK_SVG = '<svg class="heroicon heroicon-sm shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
+  var MODAL_X_SVG = '<svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+
+  function modalDismissButton(closeAttr, extraClass) {
+    return '<button type="button" ' + closeAttr + ' class="mf-modal-close mf-btn-icon' + (extraClass ? ' ' + extraClass : '') + '" aria-label="Cerrar">' + MODAL_X_SVG + '</button>';
+  }
+
+  function courseModalMarkup() {
+    return '<div id="courseModal" data-testid="course-modal" class="course-modal hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle" tabindex="-1" aria-hidden="true">' +
+      '<div data-mf-modal-backdrop class="absolute inset-0 bg-black/50"></div>' +
+      '<div class="relative z-10 flex min-h-full items-center justify-center p-4 pointer-events-none">' +
+      '<div class="course-modal-panel pointer-events-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl">' +
+      '<div class="course-modal-cover aspect-video relative bg-gray-200">' +
+      '<img data-mf-modal-cover src="" alt="" class="h-full w-full object-cover">' +
+      '<span data-mf-modal-lock-badge class="hidden absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-gray-900/85 px-2.5 py-1 text-xs font-medium text-white">' +
+      LOCK_SVG_SM + ' Bloqueado</span>' +
+      '<button type="button" data-mf-modal-bookmark class="course-bookmark-btn course-modal-bookmark mf-btn-icon absolute left-3 top-3 z-10" aria-label="Guardar curso" aria-pressed="false"></button>' +
+      modalDismissButton('data-mf-modal-close', 'course-modal-close absolute right-3 top-3 z-20') +
+      '</div>' +
+      '<div class="course-modal-body p-5">' +
+      '<p data-mf-modal-grupo class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500"></p>' +
+      '<div class="mb-3 flex flex-wrap items-center gap-2">' +
+      '<span data-mf-modal-categoria class="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700"></span>' +
+      '<span data-mf-modal-status class="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Pendiente</span>' +
+      '</div>' +
+      '<h2 id="courseModalTitle" class="text-xl font-semibold leading-snug text-gray-900"></h2>' +
+      '<p class="mt-1.5 flex items-center gap-1.5 text-sm text-gray-500">' + MODAL_CLOCK_SVG +
+      '<span data-mf-modal-duration></span></p>' +
+      '<p data-mf-modal-desc class="mt-4 border-t border-gray-100 pt-4 text-sm leading-relaxed text-gray-600"></p>' +
+      '<div data-mf-modal-prereqs class="hidden mt-4 flex gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">' +
+      '<span class="shrink-0 pt-0.5 text-amber-700" aria-hidden="true">' + LOCK_SVG_SM + '</span>' +
+      '<p data-mf-modal-prereqs-text class="min-w-0"></p></div>' +
+      '<div class="mt-6">' +
+      '<button type="button" data-mf-modal-acceder class="mf-btn-primary w-full">Acceder</button>' +
+      '</div></div></div></div></div>';
+  }
+
+  function mountCourseModal() {
+    var existing = document.getElementById('courseModal');
+    if (existing) existing.outerHTML = courseModalMarkup();
+    else document.body.insertAdjacentHTML('beforeend', courseModalMarkup());
+  }
+
+  function populateCourseModal(id) {
     var c = COURSES[id];
     var modal = document.getElementById('courseModal');
     if (!c || !modal) return;
-    modalCourseId = id;
-    recordRecentView(id);
     var locked = isCourseLocked(id);
-    qs('#courseModalTitle', modal) && setText(qs('#courseModalTitle', modal), c.title);
+    var cover = qs('[data-mf-modal-cover]', modal);
+    if (cover) {
+      cover.src = courseCoverUrl(id);
+      cover.alt = '';
+    }
+    var lockBadge = qs('[data-mf-modal-lock-badge]', modal);
+    if (lockBadge) lockBadge.classList.toggle('hidden', !locked);
+    var grupoEl = qs('[data-mf-modal-grupo]', modal);
+    if (grupoEl) setText(grupoEl, courseGrupoLabel(id));
     var cat = qs('[data-mf-modal-categoria]', modal);
-    var dur = qs('[data-mf-modal-duration]', modal);
-    var desc = qs('[data-mf-modal-desc]', modal);
-    var pre = qs('[data-mf-modal-prereqs]', modal);
     if (cat) setText(cat, c.categoria);
+    var status = qs('[data-mf-modal-status]', modal);
+    if (status) {
+      status.className = statusChipClass(id);
+      setText(status, statusLabel(id));
+    }
+    qs('#courseModalTitle', modal) && setText(qs('#courseModalTitle', modal), c.title);
+    var dur = qs('[data-mf-modal-duration]', modal);
     if (dur) setText(dur, c.duration);
+    var desc = qs('[data-mf-modal-desc]', modal);
     if (desc) setText(desc, c.desc);
-    if (pre) {
-      if (locked && (c.prereqs.length || (c.grupo === 'malla' && !isMallaTabUnlocked(c.tab)))) {
+    var pre = qs('[data-mf-modal-prereqs]', modal);
+    var preText = qs('[data-mf-modal-prereqs-text]', modal);
+    if (pre && preText) {
+      if (locked && (c.prereqs.length || (c.grupo === 'malla' && !isMallaTabUnlocked(c.mallaSlug, c.tab)))) {
         pre.classList.remove('hidden');
-        setText(pre, lockMessage(id));
+        setText(preText, lockMessage(id));
       } else {
         pre.classList.add('hidden');
-        setText(pre, '');
+        setText(preText, '');
       }
     }
+    modal.classList.toggle('course-modal--locked', locked);
     var acc = qs('[data-mf-modal-acceder]', modal);
     if (acc) {
       acc.disabled = locked;
       acc.classList.toggle('opacity-50', locked);
       acc.classList.toggle('cursor-not-allowed', locked);
+      acc.setAttribute('title', locked ? lockMessage(id) : '');
     }
     updateModalBookmark();
+  }
+
+  function openCourseModal(id) {
+    if (!COURSES[id] || !document.getElementById('courseModal')) return;
+    modalCourseId = id;
+    recordRecentView(id);
+    populateCourseModal(id);
+    var modal = document.getElementById('courseModal');
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
     modal.focus();
@@ -2575,10 +3073,10 @@
         var resId = resVer.getAttribute('data-mf-resource-id') || (resVer.closest('[data-mf-resource]') && resVer.closest('[data-mf-resource]').getAttribute('data-mf-resource'));
         if (resId) openResourceModal(resId);
       }
-      if (e.target.closest('[data-mf-resource-modal-close]') || e.target.closest('[data-mf-resource-modal-backdrop]')) {
+      if (e.target.closest('[data-mf-resource-modal-close]')) {
         closeResourceModal();
       }
-      if (e.target.closest('[data-mf-modal-close]') || e.target.closest('[data-mf-modal-backdrop]')) {
+      if (e.target.closest('[data-mf-modal-close]')) {
         closeCourseModal();
         closeEquipoModal();
       }
@@ -2613,9 +3111,13 @@
       }
     });
 
+    document.addEventListener('click', function (e) {
+      var trigger = e.target.closest('[data-mf-accordion-trigger]');
+      if (trigger) toggleMallaAccordion(trigger);
+    });
+
     qsa('[data-mf-malla-tab]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        if (btn.disabled) return;
         switchMallaTab(btn.getAttribute('data-mf-malla-tab'));
       });
     });
@@ -2632,9 +3134,13 @@
   window.mfCloseResourceModal = closeResourceModal;
 
   document.addEventListener('DOMContentLoaded', function () {
+    mountCourseModal();
+    if (!initGrupoPage()) return;
+    if (!initMallaPage()) return;
     bindSimBar();
     bindGlobal();
     bindRecentCarousel();
+    bindMisCursosCarousels();
     bindBibliotecaTabs();
     bindBibliotecaFilters();
     bindGrupoFilters();

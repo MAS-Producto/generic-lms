@@ -31,6 +31,8 @@
 | Table data surface | filter box + sortable table + pagination toolbar (Mi equipo, historial) |
 | Form field | Tailwind bordered inputs in filter boxes |
 | Empty state | centered dashed-border block + heading + helper + CTA per 007 |
+| Grupo carousel section | `.mf-carousel-section` bordered card (same as Últimos vistos); `.mf-btn-secondary` **Ver todos** |
+| Mis cursos nav icon | Heroicons `academic-cap` |
 | Progress ring | Single-segment SVG ring (Inicio hero) |
 | Instruction banner | removed — sim-bar only (no per-page instruction panels) |
 
@@ -44,12 +46,11 @@
 
 **The Solution:** A **Mi formación** module with:
 
-- **Inicio** — landing dashboard with welcome banner, overall mandatory progress ring, and **Últimos vistos** course carousel.
-- **Three mandatory grupos** (each its own sidebar item and page — **independent from Mallas**):
-  - **Inducción** — onboarding courses; **within-grupo** curso locks.
-  - **Cursos normativos** — compliance courses; **within-grupo** curso locks.
-  - **Formación complementaria** — complementary mandatory courses; **no locks**.
-- **Mallas** — one **malla assigned to the user** (by **nivel de rol**), with internal grupos (tabs), group-level and within-grupo prerequisites.
+- **Inicio** — landing dashboard with welcome banner, overall mandatory progress ring, **Últimos vistos** course carousel, and **Ver mis cursos** quick link.
+- **Mis cursos** — org-agnostic hub for **all assigned course grupos** (sidebar item under **Inicio**). Each assigned grupo appears as a carousel section (Últimos vistos pattern); **Ver todos** opens a **dynamic grupo page** with filters and paginated grid. Lock behavior is **configured per grupo** (not tied to fixed names). **Independent from Mallas.**
+- **Demo grupos** (masconsultores fixture): **Inducción** (locks), **Cursos normativos** (locks), **Formación complementaria** (no locks) — same 6 + 8 + 6 cursos; surfaced only through **Mis cursos** + `grupo.html`.
+- **Mis mallas** — org-agnostic hub for **assigned mallas** (by **nivel de rol**), separate sidebar item. Each malla = boxed section with **phase accordions** (collapsed) + compact course rows; **Ver más** → `malla.html`. **Independent from Mis cursos.**
+- **Demo mallas:** **Programa de Liderazgo** (4 phases, 9 cursos) + **Gestión de proyectos** (3 phases, 5 cursos); each with independent phase-lock graph.
 - **Biblioteca**, **Mis favoritos** (user-curated course bookmarks), **Mi perfil**, **Mi equipo** (supervisors only).
 
 **Business Impact:** Higher completion of mandatory training; clearer progress for employees and jefatura.
@@ -62,17 +63,17 @@
 |---------|------------|-----------------|
 | **Curso** | Base unit. Same card everywhere: cover 16:9, **categoría** chip, status chip, title, duration, **Ver más**, **Acceder**. | Course card |
 | **Categoría** | **Property of a curso** (chip + filter). Independent of sidebar **grupo** name. | Chip on card; filter on each grupo page |
-| **Grupo** | Named mandatory catalog of cursos. **Top-level grupos** = own sidebar + `.html` page. **Malla internal grupos** = tabs inside `mallas.html` only. | Sidebar item + dedicated page **or** tab within Mallas |
-| **Malla** | Role-assigned learning path for one user. Contains **internal grupos** (tabs) with between-grupo and within-grupo rules. **Not** a parent of Inducción / Cursos normativos / Complementaria. | `mallas.html` |
+| **Grupo** | Named mandatory catalog of cursos assigned to the user. **Assigned grupos** = sections inside **Mis cursos** + drill-down to `grupo.html`. | Carousel section on **Mis cursos** + `grupo.html` |
+| **Malla** | Role-assigned learning path. **Internal phases** (Fundamentos → Desarrollo → Liderazgo / Evaluación) with between-phase and within-phase rules. **Assigned mallas** = sections inside **Mis mallas** + drill-down to `malla.html`. | Phase **accordions** on **Mis mallas**; horizontal **tabs** + course grid on `malla.html` |
 | **Recurso (Biblioteca)** | Optional viewable asset (documento, video, imagen only). **Not** a curso; no progress, locks, or links. | Resource card: type icon, title, short description, **Ver** → content modal |
 
 **There is no "Formación base" module, page, or sidebar item.** The old Formación base concept is replaced by three separate **grupos**.
 
 **Prerequisite types:**
 
-1. **Within-grupo (curso locks):** Applies to **Inducción**, **Cursos normativos**, and **Mallas** internal grupos. A curso is locked until prerequisite cursos in the **same grupo/page or same malla tab** are **Aprobado**. **Exception (prototype):** cursos **En proceso**, **Reprobado**, or **Aprobado** are never locked — the user can continue or retry.
+1. **Within-grupo (curso locks):** Applies to **Inducción**, **Cursos normativos**, and malla internal phases. A curso is locked until prerequisite cursos in the **same grupo/page or same malla tab** are **Aprobado**. **Exception (prototype):** cursos **En proceso**, **Reprobado**, or **Aprobado** are never locked — the user can continue or retry.
 2. **Between-grupos (Mallas only):** Internal malla tab B unlocks after tab A is fully **Aprobado**. Parallel tabs allowed (no edge between them).
-3. **Top-level grupos (Inducción, Cursos normativos, Complementaria):** **no prerequisites between each other** — each sidebar page is always accessible. **Formación complementaria** has no within-grupo locks.
+3. **Assigned grupos (inside Mis cursos):** **no prerequisites between grupos** — all assigned sections are always visible on **Mis cursos**. **Within-grupo locks** are **per-grupo configuration** (demo: on for Inducción and Cursos normativos; off for Formación complementaria).
 
 ---
 
@@ -80,21 +81,29 @@
 
 | Role | Label (UI) | Access |
 |------|------------|--------|
-| **Primary** | Colaborador | Inicio, Inducción, Cursos normativos, Formación complementaria, Mallas, Biblioteca, Mi perfil |
+| **Primary** | Colaborador | Inicio, Mis cursos, Mis mallas, Biblioteca, Mis favoritos, Mi perfil |
 | **Supervisor** | Jefatura | Same + **Mi equipo** when ≥1 direct report (`TBD (needs confirmation)`) |
 
-**Default prototype persona:** **Jefatura** with direct reports. Demo user **María González**; **Mi nivel de rol:** **Líder** → malla **"Malla Líder — Ruta 2025"** assigned to this user.
+**Default prototype persona:** **Jefatura** with direct reports. Demo user **María González**; **Mi nivel de rol:** **Líder** → mallas **Programa de Liderazgo** + **Gestión de proyectos** assigned in demo fixtures.
 
 ---
 
 ## 3. USER STORY
 
 **AS A** Colaborador  
-**I WANT TO** see my overall mandatory progress on **Inicio** and open **Inducción**, **Cursos normativos**, **Formación complementaria**, or **Mallas** from one place  
-**SO THAT** I know what to complete next without searching the LMS.
+**I WANT TO** see my overall mandatory progress on **Inicio** and open **Mis cursos** to browse all assigned grupos in one place  
+**SO THAT** I know what to complete next without org-specific sidebar labels or searching the LMS.
+
+**AS A** Colaborador  
+**I WANT TO** scroll each assigned grupo’s courses in a carousel and open the full grupo page with filters when I need to search  
+**SO THAT** I can resume or find any course quickly.
+
+**AS A** Colaborador  
+**I WANT TO** see my assigned mallas on **Mis mallas** with the learning path and phase locks visible  
+**SO THAT** I understand what to complete next in role-based programs without opening each phase blindly.
 
 **AS A** Jefatura  
-**I WANT TO** use the same **Inicio** for myself and open **Mi equipo** to see each report's progress by grupo and **Malla**  
+**I WANT TO** use the same **Inicio** for myself (including **Ver mis cursos**) and open **Mi equipo** to see each report's progress by grupo and malla  
 **SO THAT** I can follow up on compliance without admin tools.
 
 **AS A** Colaborador  
@@ -108,7 +117,7 @@
 ### 4.1 Entry and shell
 
 1. **`index.html`** → **`inicio.html`** (meta refresh).
-2. **Sidebar (Mi formación):** **Inicio** → **Inducción** → **Cursos normativos** → **Formación complementaria** → **Mallas** → **Biblioteca** → **Mis favoritos** → (sep) → **Mi perfil** → **Mi equipo** (if eligible).
+2. **Sidebar (Mi formación):** **Inicio** → **Mis cursos** → **Mis mallas** → **Biblioteca** → **Mis favoritos** → (sep) → **Mi perfil** → **Mi equipo** (if eligible).
 3. **Navbar:** notifications **bell** → **dropdown panel** (pending mandatory cursos; empty state copy); user menu: **Panel de administración** (disabled placeholder) + **Cerrar sesión**.
 4. **Sim-bar** (PROTOTYPE-ONLY, fixed bottom): label **Simulación de progreso**; **0% · 45% · 100%** as toggle buttons — prototype-wide via `localStorage`; drives hero ring, Últimos vistos carousel, malla tab locks, notifications, locked cards, congrats alert consistently on all pages. No persona toggle.
 
@@ -119,7 +128,7 @@
 │ [Optional] Congrats alert (first visit at 100% mandatory)    │
 ├─────────────────────────────────────────────────────────────┤
 │ HERO (brand-surface): ring % + Hola {nombre} + subtitle      │
-│  Quick links: Ir a Mi perfil · Ver Mi equipo                 │
+│  Quick links: Ver mis cursos · Ver mis mallas · Ir a mi perfil · Ver mi equipo │
 ├─────────────────────────────────────────────────────────────┤
 │ ÚLTIMOS VISTOS: horizontal carousel of course cards          │
 │  scroll strip + prev/next; Ver más modal + Acceder → grupo   │
@@ -128,68 +137,84 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-- **Avance general** = all mandatory cursos **Aprobado** ÷ total (6 + 8 + 6 + 9 = **29**).
-- **Últimos vistos** = horizontal carousel on **Inicio** only; **sim-bar** sets demo recents: **0%** = empty; **45%** = IND-4, NOR-3, MLL-4, COM-2; **100%** = IND-6, NOR-8, MLL-9, COM-6 (últimos cursos de cada ruta). Ver más / Acceder use the same course-card actions as grupo pages.
-- **Ideal sim:** **13 de 29** (~45%). **0%** / **100%** = sim-bar toggles.
+- **Avance general** = all mandatory cursos **Aprobado** ÷ total (6 + 8 + 6 + 9 + 5 = **34**).
+- **Últimos vistos** = horizontal carousel on **Inicio** only; **sim-bar** sets demo recents: **0%** = empty; **45%** = IND-4, NOR-3, MLL-4, COM-3; **100%** = IND-6, NOR-8, MLL-9, COM-6 (últimos cursos de cada ruta). Ver más / Acceder use the same course-card actions as grupo pages.
+- **Ver mis cursos** hero CTA → `mis-cursos.html`; **Ver mis mallas** → `mis-mallas.html`.
+- **Ideal sim:** **14 de 34** (~45%). **0%** / **100%** = sim-bar toggles.
 
-### 4.3 Inducción (`induccion.html`)
+### 4.3 Mis cursos (`mis-cursos.html`)
 
-- Breadcrumb: **Inicio › Inducción**.
-- Page description (replaces inline progress subtitle).
-- Filter box: search (title only), **categoría** (curso subcategory), **estado**, clear — filters course grid live.
-- Pagination below grid: page size (6 / 12 / 24; default **12**), **Página X de Y**, Anterior / Siguiente — applies to filtered results.
-- **6 course cards** with **within-grupo locks** (parallel + join pattern — §9.2).
+- Breadcrumb: **Inicio › Mis cursos**.
+- Page description (org-agnostic; §7.2.2).
+- **One section per assigned grupo** (fixture order: Inducción → Cursos normativos → Formación complementaria in demo), **stacked vertically** as `.mf-carousel-section` bordered cards (same border as Inicio hero / Últimos vistos).
+- Each section follows the **Últimos vistos** carousel pattern:
+  - **Header row:** title + helper (left); **Ver todos** (`.mf-btn-secondary`) + prev/next (`mf-btn-icon`) (right cluster)
+  - **Horizontal strip** (`inicio-recent-track`) with **all cursos** in that grupo (full scroll; no card cap)
+  - **Ver todos** → `grupo.html?grupo={slug}`
+- Same course cards as today: cover 16:9, categoría chip, estado chip, **Ver más** modal, **Acceder**, bookmark toggle; sim-bar drives estados and within-grupo locks per grupo config.
+- **No assignments:** page shell renders; short message where sections would be (§7.2.2).
+- **Removed from sidebar:** `induccion.html`, `cursos-normativos.html`, `formacion-complementaria.html` (no redirects in prototype).
 
-### 4.4 Cursos normativos (`cursos-normativos.html`)
+### 4.4 Grupo dinámico (`grupo.html`)
 
-- Breadcrumb: **Inicio › Cursos normativos**.
-- Page description only (no inline grupo progress — same as Inducción).
-- Same filter box and pagination as Inducción.
-- **8 course cards** with **within-grupo locks** (§9.2).
+- URL: `grupo.html?grupo={slug}` — demo slugs: `induccion`, `cursos-normativos`, `formacion-complementaria`.
+- Breadcrumb: **Inicio › Mis cursos › {Grupo name}** (dynamic from fixture).
+- Dynamic page title + description from `ASSIGNED_GRUPOS` metadata.
+- Same UX as former static grupo pages: filter box (search title, **categoría**, **estado**, **Limpiar filtros**) + 3-col course card grid + pagination (6 / 12 / 24; default **12**).
+- **Within-grupo locks** when grupo `locksEnabled: true`; all **Acceder** enabled when `locksEnabled: false`.
+- Invalid or unknown `grupo` slug → redirect `mis-cursos.html` (prototype).
 
-### 4.5 Formación complementaria (`formacion-complementaria.html`)
+### 4.5 Mis mallas (`mis-mallas.html`)
 
-- Breadcrumb: **Inicio › Formación complementaria**.
-- Page description + same filter box and pagination as Inducción.
-- **6 course cards** — **all Acceder enabled** (no locks).
+- Breadcrumb: **Inicio › Mis mallas**.
+- Page description (org-agnostic; §7.3.1).
+- **One boxed card per assigned malla** (demo: **Programa de Liderazgo**, **Gestión de proyectos**), stacked vertically with gap (no dividers).
+- Each section:
+  - **Header row:** malla name + helper (left); **Ver más** (`.mf-btn-secondary`) → `malla.html?malla={slug}` (right)
+  - **Phase accordions** (one per internal phase, stacked; **all collapsed by default**)
+  - **Accordion trigger:** phase name · **X de Y aprobados** · lock icon when phase locked · chevron
+  - **Expanded — unlocked phase:** compact course rows (title + estado chip + **Ver más** modal + **Acceder**)
+  - **Expanded — locked phase:** greyed course title previews (no actions)
+- **No assignments:** page shell + empty message (§7.3.1).
+- **Removed:** `mallas.html` (no redirect in prototype).
 
-### 4.6 Mallas (`mallas.html`)
+### 4.6 Malla dinámica (`malla.html`)
 
-- Breadcrumb: **Inicio › Mallas**.
-- Header: **Tu malla:** **Malla Líder — Ruta 2025** (demo — assigned to logged-in user by **nivel de rol** **Líder**).
-- **Mi nivel de rol:** **Líder** badge (no inline malla progress count).
-- **4 internal grupos** as horizontal tabs:
+- URL: `malla.html?malla={slug}` — demo slugs: `programa-liderazgo`, `gestion-proyectos`.
+- Breadcrumb: **Inicio › Mis mallas › {Malla name}**.
+- Dynamic title + description from `ASSIGNED_MALLAS`.
+- **Internal phases** as horizontal **tabs** (count and labels per malla in `ASSIGNED_MALLAS`):
 
-| Tab | Prerequisite (between internal grupos) |
-|-----|----------------------------------------|
-| **Fundamentos** | None |
-| **Desarrollo** | All **Fundamentos** **Aprobado** |
-| **Liderazgo** | All **Desarrollo** **Aprobado** |
-| **Evaluación** | All **Desarrollo** **Aprobado** (**parallel** with **Liderazgo**) |
+| Demo malla | Phases | Between-phase rule |
+|------------|--------|-------------------|
+| **Programa de Liderazgo** | Fundamentos → Desarrollo → Liderazgo / Evaluación | **Liderazgo** and **Evaluación** unlock in parallel after **Desarrollo** |
+| **Gestión de proyectos** | Diagnóstico → Ejecución → Certificación | Linear chain |
 
-- Locked tab / locked curso behavior per §1.1. Full mock in §9.2.
+- All phase tabs remain **visible and selectable**; lock icon on tab when upstream phase incomplete (informational only).
+- Tab panel = 3-col course card grid per phase; **curso** locks per §1.1 (phase lock disables **Acceder** on cards in that tab; scoped per malla via `mallaSlug`).
+- Invalid or unknown `malla` slug → redirect `mis-mallas.html`.
 
 ### 4.7 Mi perfil (`mi-perfil.html`)
 
 - **Profile summary box** (same layout as Mi equipo modal profile per member): avatar placeholder with initials, nombre, RUT/DNI, cargo, gerencia/área/familia de cargo + large numeric metrics — **Finalizados**, **Aprobados**, **Reprobados** (from `historialCourseIds()` / `getCourseEstadoKey()`) and **Avance general** as **%** only (sim-bar; same calculation as Inicio hero; no doughnut).
-- **Insignias:** one per top-level grupo (**Inducción**, **Cursos normativos**, **Formación complementaria**) + **Mallas** (current role); locked until grupo/malla fully **Aprobado**.
+- **Insignias:** eight generic **achievement** badges (not tied to grupo/malla names): **Primer paso**, **Velocista**, **Sobresaliente**, **Perfeccionista**, **Constancia**, **Explorador**, **Maratón**, **Al día** — circular medallion (`.mf-insignia-card`) with Heroicon (`.mf-insignia-icon`); title below circle; unlock criterion in **tooltip** (hover/focus on circle); locked = grayscale + lock badge + gray icon; earned = brand-filled circle + white icon. Prototype unlock set per sim-bar via `INSIGNIAS_BY_LEVEL` (**0%** → none; **45%** → 5; **100%** → all 8).
 - **Historial** (mandatory cursos **finalizados** only — **Aprobado** or **Reprobado**; excludes Sin actividad / En proceso): **filter box** — **Buscar** (ID o curso) · **Categoría** (grupo) · **Estado** (**Todos** / **Aprobado** / **Reprobado**) · **Limpiar filtros**; catalog empty state when none finalized; filter empty state; table columns **ID**, **Curso**, **Categoría** (grupo only), **Estado**, **Fecha finalización**, **Certificado** (**Descargar** when **Aprobado**; — otherwise); **pagination** (6 / 12 / 24 per page, default **6**). Rows from `historialCourseIds()` via `renderHistorialTable()` on sim-bar change (same estado source as grupo cards).
 
 ### 4.8 Mi equipo (`mi-equipo.html`)
 
 - **Filter box** (same pattern as grupo/Biblioteca): **Buscar** (RUT/DNI, nombre, gerencia, área, cargo, familia de cargo) · **Gerencia** · **Área** · **Familia de cargo** · **Limpiar filtros**; filter empty state when no rows match.
 - Table of direct reports — columns (in order): **RUT/DNI**, **Nombre**, **Gerencia**, **Área**, **Cargo**, **Familia de cargo**, **Avance general** (brand progress bar + %), **Acciones**. All columns except **Acciones** are **sortable** (click header toggles asc/desc; default **Nombre** ascending; **Avance general** defaults to descending on first click).
-- **Avance general** per row = share of all mandatory cursos assigned to that user (**Aprobado** / 29 in demo) — same calculation as **Inicio** overall progress for that user (not the supervisor’s sim-bar state).
+- **Avance general** per row = share of all mandatory cursos assigned to that user (**Aprobado** / 34 in demo) — same calculation as **Inicio** overall progress for that user (not the supervisor’s sim-bar state).
 - Row action **Ver cursos** as secondary table button (`.mf-btn-table`; not text link).
 - **Pagination** on filtered rows: page size **6 / 12 / 24** (default **6**), **Anterior** / **Siguiente**, *Página N de M*.
-- **Ver cursos** modal: **profile box** (same layout as Mi perfil summary — avatar placeholder with initials; nombre, RUT/DNI, cargo, gerencia/área/familia; **Finalizados** / **Aprobados** / **Reprobados** from per-member fixture; **Avance general** large **%**) + **filter box** (**Buscar** by ID or curso · **Categoría** = grupo: Inducción / Cursos normativos / Formación complementaria / Mallas · **Estado** · **Limpiar filtros**) + **sortable table** (columns **ID**, **Curso**, **Categoría**, **Estado**; same table/sort/pagination pattern as main Mi equipo table; per-member fixture, independent of supervisor sim-bar).
+- **Ver cursos** modal: **profile box** (same layout as Mi perfil summary — avatar placeholder with initials; nombre, RUT/DNI, cargo, gerencia/área/familia; **Finalizados** / **Aprobados** / **Reprobados** from per-member fixture; **Avance general** large **%**) + **filter box** (**Buscar** by ID or curso · **Categoría** = grupo/malla: Inducción / Cursos normativos / Formación complementaria / Programa de Liderazgo / Gestión de proyectos · **Estado** · **Limpiar filtros**) + **sortable table** (columns **ID**, **Curso**, **Categoría**, **Estado**; same table/sort/pagination pattern as main Mi equipo table; per-member fixture, independent of supervisor sim-bar).
 
 ### 4.9 Mis favoritos (`mis-favoritos.html`)
 
 - Breadcrumb: **Inicio › Mis favoritos**.
 - Page description: user-curated list of bookmarked mandatory **cursos** (distinct from **Últimos vistos**, which is session-driven on Inicio).
-- **Bookmark toggle** on every course card (grupo pages, Mallas, Inicio carousel) and in **Ver más** modal — top-left icon on cover; persists in `localStorage` (`mf-bookmarks`).
-- **Mis favoritos** page: dynamic course-card grid from bookmark IDs; **filter box** — **Buscar** (title) · **Grupo** (Inducción / Cursos normativos / Formación complementaria / Mallas) · **Estado** · **Limpiar filtros**; catalog empty state when none saved; filter empty state; **pagination** (6 / 12 / 24 per page, default **12**). Same card actions (**Ver más**, **Acceder**, bookmark toggle) as grupo pages.
+- **Bookmark toggle** on every course card (grupo pages, malla detail, Mis mallas hub compact rows, Inicio carousel) and in **Ver más** modal — top-left icon on cover; persists in `localStorage` (`mf-bookmarks`).
+- **Mis favoritos** page: dynamic course-card grid from bookmark IDs; **filter box** — **Buscar** (title) · **Grupo** (Inducción / Cursos normativos / Formación complementaria / Programa de Liderazgo) · **Estado** · **Limpiar filtros**; catalog empty state when none saved; filter empty state; **pagination** (6 / 12 / 24 per page, default **12**). Same card actions (**Ver más**, **Acceder**, bookmark toggle) as grupo pages.
 - Bookmarks do **not** affect **Avance general**, notifications, insignias, or historial.
 
 ### 4.10 Biblioteca (`biblioteca.html`)
@@ -207,14 +232,16 @@
 
 | # | Rule |
 |---|------|
-| R1 | **Avance general** counts every mandatory **curso** across all top-level grupos + malla (29 in demo). |
-| R2 | **Inducción**, **Cursos normativos**, **Formación complementaria** = same for all employees. **Malla** = assigned per **nivel de rol** (`TBD (needs confirmation)`). |
-| R3 | Mi perfil insignia unlocks when all cursos in that grupo/malla are **Aprobado**. |
+| R1 | **Avance general** counts every mandatory **curso** across all assigned grupos (inside **Mis cursos**) + mallas (34 in demo). |
+| R2 | **Assigned grupos** in **Mis cursos** = driven by user/org assignment (`TBD (needs confirmation)`). Demo fixture: Inducción, Cursos normativos, Formación complementaria for all employees. **Malla** = assigned per **nivel de rol** (`TBD (needs confirmation)`). |
+| R3 | Mi perfil insignias unlock when achievement criteria are met (prototype: `INSIGNIAS_BY_LEVEL` per sim-bar; production: LMS rules for scores, dates, streaks, categories — `TBD (needs confirmation)`). |
 | R4 | Only **Aprobado** increments progress. |
 | R5 | **Categoría** ≠ grupo name; used for chip + filter only. |
-| R6 | **Within-grupo locks:** Inducción, Cursos normativos, Mallas internal grupos (not Complementaria). |
-| R7 | **Mallas between internal grupos:** per §4.6 graph. |
-| R8 | **No cross-links** between top-level grupos (Inducción ⊥ Cursos normativos ⊥ Complementaria ⊥ Mallas at navigation level). |
+| R6 | **Within-grupo locks:** per-grupo `locksEnabled` flag on assigned grupos + within-phase locks on malla cursos. Demo: locks on Inducción and Cursos normativos; off on Formación complementaria. |
+| R7 | **Malla between internal phases:** per §4.6 graph. |
+| R8 | **Assigned grupos** live under **Mis cursos**; **assigned mallas** live under **Mis mallas** — separate sidebar paths (not nested). |
+| R14 | **Mis mallas** shows only mallas assigned to the logged-in user; malla order follows assignment/fixture order. |
+| R13 | **Mis cursos** shows only grupos assigned to the logged-in user; grupo order follows assignment/fixture order. |
 | R9 | **Biblioteca** excluded from progress, badges, historial mandatory rows, notifications. |
 | R10 | **Mi equipo** only with ≥1 direct report. |
 | R11 | **Historial** = mandatory cursos **finalizados** (**Aprobado** or **Reprobado** only). |
@@ -232,24 +259,38 @@
 | Opens **Inicio** | Sim **0%** | 0% progress; Últimos vistos empty state (no cards). |
 | Opens **Inicio** | Sim **100%** | 100% progress; Últimos vistos shows last cursos per ruta (IND-6, NOR-8, MLL-9, COM-6). |
 | Opens **Ver más** on a recent card | From Inicio | Open course preview modal (same as grupo pages). |
-| Clicks **Acceder** on a recent card | Curso not locked | Navigate to grupo page (same button pattern as grupo pages). |
-| Opens **Inducción** | Curso locked | Lock icon; **Acceder** disabled; tooltip lists prerequisites. |
-| Opens **Formación complementaria** | Any | All **Acceder** enabled. |
-| Opens **Mallas** | Demo user | Show **Malla Líder — Ruta 2025**; 4 internal tabs. |
-| Opens locked Malla tab | Upstream incomplete | Lock tab; preview; **Acceder** disabled. |
+| Clicks **Acceder** on a recent card | Curso not locked | Navigate to dynamic grupo page (same button pattern as grupo pages). |
+| Clicks **Ver mis cursos** on Inicio | Any | Navigate to `mis-cursos.html`. |
+| Clicks **Ver mis mallas** on Inicio | Any | Navigate to `mis-mallas.html`. |
+| Opens **Mis cursos** | Sim **45%** | Three assigned grupo sections; carousels show all cursos per grupo with correct estados/locks. |
+| Opens **Mis cursos** | Zero assignments (sim/fixture) | Page shell + empty message; no carousel sections. |
+| Clicks **Ver todos** on Inducción section | From Mis cursos | Open `grupo.html?grupo=induccion` with filter box + paginated grid. |
+| Opens **grupo.html?grupo=induccion** | Curso locked | Lock icon; **Acceder** disabled; tooltip lists prerequisites. |
+| Opens **grupo.html?grupo=formacion-complementaria** | Any | All **Acceder** enabled. |
+| Opens **Mis mallas** | Demo user | Two boxed malla sections; phase accordions **collapsed**; expand shows compact course rows. |
+| Expands a phase accordion | Mis mallas | Panel opens; compact rows with actions when phase unlocked. |
+| Clicks **Ver más** on malla section | From Mis mallas | Open `malla.html?malla={slug}` with horizontal phase tabs + course-card grid. |
+| Opens **Mis mallas** | Zero assignments (sim/fixture) | Page shell + empty message; no malla sections. |
+| Opens **malla.html?malla=programa-liderazgo** | Demo user | Dynamic title **Programa de Liderazgo**; 4 horizontal phase tabs + 3-col grid. |
+| Opens **malla.html?malla=gestion-proyectos** | Demo user, sim **45%** | Dynamic title **Gestión de proyectos**; 3 tabs; **Diagnóstico** unlocked; **Ejecución** locked. |
+| Switches to locked malla tab | Upstream incomplete | Tab selectable (lock icon on label); course cards show lock badge; **Acceder** disabled. |
+| Opens **malla.html?malla=invalid** | Unknown slug | Redirect `mis-mallas.html`. |
 | Opens **Mi equipo** | Has reports | Table shows RUT/DNI, org fields, **Avance general** bar per report; filters, **column sort**, and pagination apply. |
 | Clicks a sortable column header | Mi equipo table | Sort rows by that column (asc/desc toggle); **Acciones** not sortable. |
 | Opens **Mi equipo** modal | **Ver cursos** on a row | Profile box + sortable/filterable/paginated curso table (ID, Curso, Categoría, Estado) for that member. |
-| Opens notifications | Pending items | Links to relevant grupo page or `mallas.html`. |
+| Opens notifications | Pending items | Links to `grupo.html?grupo={slug}` or `malla.html?malla={slug}`. |
 | Opens **Ver** on a Biblioteca resource | documento / video / imagen | Open modal showing that resource’s content (PDF page mock, player, or image). |
 | Filters Biblioteca tab | e.g. **Onboarding** | Show only resources tagged to that thematic tab (mixed types). |
 | Filters Biblioteca (search / tipo) | Active tab has matches | Filter visible resources by title and **Tipo**; empty state when no matches; **Limpiar filtros** resets search/tipo only (tab unchanged). |
 | Paginates Biblioteca grid | Tab + filters yield &gt; page size | Show **Mostrar N por página** and page controls on filtered set; reset to page 1 on tab/filter change. |
-| Filters grupo page (search / categoría / estado) | Inducción, Normativos, or Complementaria | Filter course grid by title, curso **categoría**, or **estado** chip; empty state when no matches. |
+| Filters grupo page (search / categoría / estado) | Any assigned grupo on `grupo.html` | Filter course grid by title, curso **categoría**, or **estado** chip; empty state when no matches. |
 | Toggles bookmark on a course card | Any page with course cards | Icon fills (saved); course ID stored in `mf-bookmarks`; toast confirms action. |
 | Opens **Mis favoritos** | Has bookmarks | Grid shows saved courses with grupo label, filters, and pagination. |
-| Opens **Mis favoritos** | No bookmarks | Catalog empty state with **Explorar cursos** CTA. |
+| Opens **Mis favoritos** | No bookmarks | Catalog empty state with **Explorar cursos** CTA → `mis-cursos.html`. |
 | Removes bookmark from **Mis favoritos** | Card visible | Card removed from grid; toggle off on other pages. |
+| Opens **Mi perfil** | Sim **0%** | All 8 insignias locked (grayscale + lock icon). |
+| Opens **Mi perfil** | Sim **45%** | **Primer paso**, **Velocista**, **Sobresaliente**, **Explorador**, **Maratón** earned; **Perfeccionista**, **Constancia**, **Al día** locked. |
+| Opens **Mi perfil** | Sim **100%** | All 8 insignias earned. |
 
 ---
 
@@ -268,21 +309,34 @@
 | Últimos vistos heading | *Últimos vistos* |
 | Últimos vistos helper | *Retoma donde lo dejaste en tu última sesión* |
 | Recientes empty heading | *Aún no has visto cursos* |
-| Recientes empty helper | *Abre un curso desde tus rutas obligatorias y aparecerá aquí la próxima vez.* |
+| Recientes empty helper | *Abre un curso desde **Mis cursos** y aparecerá aquí la próxima vez.* |
 | Carousel controls | `aria-label` **Desplazar cursos anteriores** / **Desplazar cursos siguientes** |
-| Hero quick links | **Ir a Mi perfil** · **Ver Mi equipo** |
+| Hero quick links | **Ver mis cursos** · **Ver mis mallas** · **Ir a mi perfil** · **Ver mi equipo** |
 
 ### 7.2 Sidebar labels
 
-**Inducción** · **Cursos normativos** · **Formación complementaria** · **Mallas** · **Biblioteca** · **Mis favoritos** · **Mi perfil** · **Mi equipo**
+**Inicio** · **Mis cursos** · **Mis mallas** · **Biblioteca** · **Mis favoritos** · **Mi perfil** · **Mi equipo**
 
-### 7.2.1 Grupo pages — description, filters, estados
+### 7.2.1 Grupo dinámico (`grupo.html`) — description, filters, estados
 
-| Screen | Page description |
-|--------|------------------|
-| Inducción | *Cursos de bienvenida e integración para nuevos colaboradores. Los cursos se desbloquean en secuencia dentro de este grupo.* |
-| Cursos normativos | *Cursos obligatorios de compliance, ética, seguridad y normativa corporativa. Debes completarlos según el orden de prerrequisitos.* |
-| Formación complementaria | *Cursos complementarios obligatorios sin bloqueos entre ellos. Puedes acceder a cualquier curso cuando lo necesites.* |
+Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
+
+| Slug | Page description |
+|------|------------------|
+| `induccion` | *Cursos de bienvenida e integración para nuevos colaboradores. Los cursos se desbloquean en secuencia dentro de este grupo.* |
+| `cursos-normativos` | *Cursos obligatorios de compliance, ética, seguridad y normativa corporativa. Debes completarlos según el orden de prerrequisitos.* |
+| `formacion-complementaria` | *Cursos complementarios obligatorios sin bloqueos entre ellos. Puedes acceder a cualquier curso cuando lo necesites.* |
+
+### 7.2.2 Mis cursos (`mis-cursos.html`)
+
+| Element | Copy |
+|---------|------|
+| Page title | **Mis cursos** |
+| Page helper | *Todos los grupos de cursos asignados a tu perfil. Explora cada sección o abre el listado completo con filtros.* |
+| Section **Ver todos** | **Ver todos** |
+| Carousel controls | Same `aria-label` as Últimos vistos |
+| No assignments (heading) | *Aún no tienes cursos asignados* |
+| No assignments (helper) | *Cuando tu organización te asigne formación obligatoria, aparecerá aquí organizada por grupo.* |
 
 | Filter control | Copy / behavior |
 |----------------|-----------------|
@@ -296,12 +350,25 @@
 
 **Estado chips** on cards use the same four labels. Only **Aprobado** counts toward progress sim. Prototype **estado** fixtures vary by sim-bar (`EN_PROCESO_BY_LEVEL`, `REPROBADO_BY_LEVEL` in `mi-formacion.js`).
 
-### 7.3 Mallas header
+### 7.3 Mis mallas (`mis-mallas.html`)
 
 | Element | Copy |
 |---------|------|
-| Malla title | **Tu malla:** **Malla Líder — Ruta 2025** |
-| Role chip | **Mi nivel de rol:** **Líder** |
+| Page title | **Mis mallas** |
+| Page helper | *Rutas de formación asignadas según tu nivel de rol. Revisa el avance por fase o abre el detalle completo de cada malla.* |
+| Section **Ver más** | **Ver más** (links to `malla.html?malla={slug}`) |
+| Phase progress | *X de Y aprobados* per internal phase |
+| No assignments (heading) | *Aún no tienes mallas asignadas* |
+| No assignments (helper) | *Cuando tu organización te asigne un programa por rol, aparecerá aquí con su ruta de aprendizaje.* |
+
+### 7.3.1 Malla dinámica (`malla.html`)
+
+| Element | Copy |
+|---------|------|
+| Breadcrumb | **Inicio › Mis mallas › {Malla name}** |
+| Page title | Dynamic from `ASSIGNED_MALLAS` (demo: **Programa de Liderazgo**) |
+| Page description | Dynamic from fixture (demo: *Avanza por fases y completa los prerrequisitos de cada etapa.*) |
+| Phase tabs | Dynamic labels per malla (demo Liderazgo: **Fundamentos** · **Desarrollo** · **Liderazgo** · **Evaluación**) |
 
 ### 7.4 Empty / locked copy
 
@@ -316,14 +383,17 @@
 
 - Summary (dropdown heading): *Recordatorios de formación obligatoria*
 - Empty: *No tienes recordatorios pendientes.*
-- Links: `induccion.html`, `cursos-normativos.html`, `formacion-complementaria.html`, `mallas.html`
+- Links: `grupo.html?grupo={slug}` (assigned grupos), `malla.html?malla={slug}` (assigned mallas)
 - Badge count derives from progress sim
 
 ### 7.6 Course preview modal (Ver más)
 
-- Title, categoría, duration, description, prerequisites when locked
-- Header bookmark toggle: `aria-label` **Guardar curso** / **Quitar de favoritos**; `aria-pressed` reflects saved state
-- Footer: **Cerrar**; **Acceder** (disabled when locked)
+- Same fields as the course card, expanded: **cover image** (16:9), **grupo** label, **categoría** + **estado** chips, **title**, **duration** (with clock icon), **description**, lock badge on cover when blocked
+- Bookmark toggle on cover (top-left); `aria-label` **Guardar curso** / **Quitar de favoritos**; `aria-pressed` reflects saved state
+- Prerequisite / phase-lock alert (amber panel with lock icon) when **Acceder** would be disabled
+- Footer: **Acceder** only on course modal (disabled when locked)
+- Icon-only dismiss (`×`, `aria-label` **Cerrar**) top-right on every modal (course, equipo, Biblioteca resource); backdrop click does **not** dismiss
+- Markup mounted once from `mi-formacion.js` (`mountCourseModal`) so every screen shares the same modal
 
 ### 7.6.1 Bookmarks (Mis favoritos)
 
@@ -335,10 +405,10 @@
 | Card toggle (on) | `aria-label` **Quitar de favoritos**; filled bookmark icon (`--brand-primary`) |
 | Toast (add) | *Curso guardado en Mis favoritos.* |
 | Toast (remove) | *Curso quitado de Mis favoritos.* |
-| Filter toolbar | **Buscar** (placeholder *Buscar por título…*) · **Grupo** (**Todos** / Inducción / Cursos normativos / Formación complementaria / Mallas) · **Estado** (same as grupo pages) · **Limpiar filtros** |
+| Filter toolbar | **Buscar** (placeholder *Buscar por título…*) · **Grupo** (**Todos** / Inducción / Cursos normativos / Formación complementaria / Programa de Liderazgo) · **Estado** (same as grupo pages) · **Limpiar filtros** |
 | Catalog empty (heading) | *Aún no tienes cursos favoritos* |
 | Catalog empty (helper) | *Usa el ícono de marcador en cualquier tarjeta de curso para agregarlo aquí.* |
-| Catalog empty CTA | **Explorar cursos** → `induccion.html` |
+| Catalog empty CTA | **Explorar cursos** → `mis-cursos.html` |
 | Filter empty (heading) | *No se encontraron cursos favoritos* |
 | Filter empty (helper) | *Prueba con otro título, grupo o estado, o **limpiar filtros**.* |
 | Pagination | **Mostrar** (6 / 12 / 24 por página) · *Página N de M* · **Anterior** · **Siguiente** |
@@ -347,8 +417,21 @@
 
 | Element | Copy / behavior |
 |---------|-----------------|
-| Page helper | *Insignias por grupo y registro de mi historial de cursos completados.* |
+| Page helper | *Logros por tu actividad de aprendizaje y registro de cursos completados.* |
 | Profile summary | Avatar initials · nombre · RUT/DNI · cargo · gerencia · área · familia de cargo · **Finalizados** / **Aprobados** / **Reprobados** large numeric stats (historial source) · **Avance general** large **%** (sim-bar; no doughnut) |
+| Insignias section heading | **Insignias** |
+| Insignia layout | `.mf-insignia-item` — circular medallion + title below (not a rectangular card) |
+| Insignia circle (locked) | `.mf-insignia-card` — 4.5rem circle, neutral fill, grayscale filter + lock badge (top-right) |
+| Insignia circle (earned) | `.mf-insignia-card--earned` — `--brand-primary` fill and border |
+| Insignia tooltip | `.mf-insignia-tooltip` — shows unlock criterion on circle hover or keyboard focus (`tabindex="0"`); `aria-describedby` links circle to tooltip |
+| Insignia **Primer paso** | Icon: `academic-cap` · Tooltip: *Completar tu primer curso* |
+| Insignia **Velocista** | Icon: `bolt` · Tooltip: *Completar un curso en menos de 4 semanas* |
+| Insignia **Sobresaliente** | Icon: `star` · Tooltip: *Obtener 90% o más en un curso* |
+| Insignia **Perfeccionista** | Icon: `sparkles` · Tooltip: *Lograr 100% en un curso* |
+| Insignia **Constancia** | Icon: `calendar-days` · Tooltip: *Acceder 30 días consecutivos a la plataforma* |
+| Insignia **Explorador** | Icon: `rectangle-group` · Tooltip: *Completar cursos en más de 3 categorías* |
+| Insignia **Maratón** | Icon: `rocket-launch` · Tooltip: *Aprobar 3 cursos en el mismo mes* |
+| Insignia **Al día** | Icon: `check-badge` · Tooltip: *Alcanzar 100% de avance general* |
 | Historial section heading | **Mi historial de formación** |
 | Filter toolbar | **Buscar** (placeholder *Buscar por ID o curso…*) · **Categoría** (grupo; dynamic from rows) · **Estado** (**Todos** / **Aprobado** / **Reprobado**) · **Limpiar filtros** (hidden when catalog empty) |
 | Catalog empty (heading) | *Aún no hay cursos finalizados* |
@@ -407,9 +490,14 @@
 
 | Case | Behavior |
 |------|----------|
+| User has no assigned grupos | **Mis cursos** page shell + empty message (§7.2.2); sidebar still works |
+| User has one assigned grupo | Single carousel section on **Mis cursos** |
+| Grupo with many cursos | Full horizontal scroll in carousel; **Ver todos** for filter/grid on `grupo.html` |
 | User has no malla assigned | Empty malla state + `TBD (needs confirmation)` |
 | No cursos in a grupo | Empty catalog copy (§7.4) |
+| Unknown `grupo` slug on `grupo.html` | Redirect `mis-cursos.html` |
 | Direct URL `mi-equipo.html` without reports | Redirect `inicio.html` |
+| Legacy URLs `induccion.html`, etc. | Removed — no redirect in prototype |
 
 ---
 
@@ -419,27 +507,49 @@
 
 | Data | Source |
 |------|--------|
-| Grupo catalogs | LMS `TBD (needs confirmation)` |
+| Assigned grupos + catalogs | LMS assignment API `TBD (needs confirmation)` |
 | Malla assignment by rol | LMS / HR `TBD (needs confirmation)` |
 | Direct reports | Org chart `TBD (needs confirmation)` |
 
 ### 9.2 Prototype demo fixtures (HTML-only)
 
-**Demo user:** María González · **Líder** · malla **Malla Líder — Ruta 2025**
+**Demo user:** María González · **Líder** · assigned mallas **Programa de Liderazgo** (`programa-liderazgo`) + **Gestión de proyectos** (`gestion-proyectos`)
 
-**`CURRENT_USER` (Mi perfil summary):** RUT `10.234.567-8` · cargo *Jefa de capacitación y desarrollo* · Gerencia Corporativa · RR.HH. · Administración y soporte. **Avance general** = sim-bar progress (`progressPercent()` = Aprobado / 29).
+**`CURRENT_USER` (Mi perfil summary):** RUT `10.234.567-8` · cargo *Jefa de capacitación y desarrollo* · Gerencia Corporativa · RR.HH. · Administración y soporte. **Avance general** = sim-bar progress (`progressPercent()` = Aprobado / 34).
 
-**Totals:** 6 + 8 + 6 + 9 = **29** mandatory cursos. **Ideal sim:** **13 Aprobado** (4 Inducción + 3 Cursos normativos + 2 Complementaria + 4 Malla).
+**Totals:** 6 + 8 + 6 + 9 + 5 = **34** mandatory cursos. **Ideal sim:** **14 Aprobado** (4 Inducción + 4 Cursos normativos + 1 Complementaria + 4 Liderazgo + 1 Gestión de proyectos).
 
-**Prototype-wide progress (logged-in user):** `APPROVED_BY_LEVEL`, `EN_PROCESO_BY_LEVEL`, and `REPROBADO_BY_LEVEL` keyed by sim-bar **0% / 45% / 100%**; `sanitizeProgressFixtures()` keeps sets disjoint. `getDashboardEstadoKey()` drives Inicio section donuts (adds **Bloqueado** vs **No iniciado**); `getCourseEstadoKey()` drives grupo/Malla cards, insignias, notifications, and profile avance. **Mi historial** lists only finalized rows (`historialCourseIds()` = **Aprobado** or **Reprobado**). **Mi equipo** table/modal use separate `EQUIPO_MEMBERS` per-report fixtures.
+**`ASSIGNED_GRUPOS` (in `mi-formacion.js`):** ordered array driving **Mis cursos** sections and `grupo.html` routing.
+
+| Field | Purpose |
+|-------|---------|
+| `slug` | URL param (`induccion`, `cursos-normativos`, `formacion-complementaria`) |
+| `name` | Display label (sidebar-agnostic grupo name) |
+| `description` | Section helper on **Mis cursos** + page description on `grupo.html` |
+| `locksEnabled` | Whether within-grupo prerequisite locks apply |
+| `courseIds` | Ordered curso IDs in that grupo |
+
+**`ASSIGNED_MALLAS` (in `mi-formacion.js`):** ordered array driving **Mis mallas** sections and `malla.html` routing.
+
+| Field | Purpose |
+|-------|---------|
+| `slug` | URL param (demo: `programa-liderazgo`, `gestion-proyectos`) |
+| `name` | Display label (e.g. **Programa de Liderazgo**) |
+| `description` | Section helper on **Mis mallas** + page description on `malla.html` |
+| `phases[]` | Internal phases: `tab`, `label`, `upstreamTab`, `courseIds` |
+| `mallaSlug` | On each malla **curso** in `COURSES` — scopes tab locks per malla |
+
+**Prototype-wide progress (logged-in user):** `APPROVED_BY_LEVEL`, `EN_PROCESO_BY_LEVEL`, and `REPROBADO_BY_LEVEL` keyed by sim-bar **0% / 45% / 100%**; `sanitizeProgressFixtures()` keeps sets disjoint. `getCourseEstadoKey()` drives grupo/Malla cards, notifications, and profile avance. **`INSIGNIAS_BY_LEVEL`** — earned achievement badge keys per sim level (`updateInsignias()`). **Mi historial** lists only finalized rows (`historialCourseIds()` = **Aprobado** or **Reprobado**). **Mi equipo** table/modal use separate `EQUIPO_MEMBERS` per-report fixtures.
 
 **Course card covers (16:9):** Temporary placeholders at `assets/images/courses/{course-id}.jpg` (see folder README). Loaded via `courseCoverUrl()` in `mi-formacion.js`. **Replace files in place** when client provides real cover art — same filenames, no code change. Production LMS cover source is `TBD (needs confirmation)`.
 
-**Últimos vistos (sim-bar on Inicio):** `0%` → none; `45%` → IND-4, NOR-3, MLL-4, COM-2; `100%` → IND-6, NOR-8, MLL-9, COM-6.
+**Últimos vistos (sim-bar on Inicio):** `0%` → none; `45%` → IND-4, NOR-3, MLL-4, COM-3; `100%` → IND-6, NOR-8, MLL-9, COM-6.
+
+**Mi perfil insignias (`INSIGNIAS_BY_LEVEL`):** `0%` → none; `45%` → primer-paso, velocista, sobresaliente, explorador, maraton; `100%` → all eight keys. Production achievement engine `TBD (needs confirmation)`.
 
 **Mis favoritos (bookmarks):** `mf-bookmarks` in `localStorage`; demo seed on first visit: **NOR-3**, **COM-2**, **MLL-4**. Production source `TBD (needs confirmation)`.
 
-**Mi equipo (`EQUIPO_MEMBERS` in `mi-formacion.js`):** six direct reports with RUT/DNI, gerencia, área, cargo, familia de cargo, and per-member `approved` curso IDs. **Avance general** = `round(approved.length / 29 × 100)` (same rule as Inicio for that user). Demo range: Pedro **14%** → Valentina **100%**.
+**Mi equipo (`EQUIPO_MEMBERS` in `mi-formacion.js`):** six direct reports with RUT/DNI, gerencia, área, cargo, familia de cargo, and per-member `approved` curso IDs. **Avance general** = `round(approved.length / 34 × 100)` (same rule as Inicio for that user). Demo range: Pedro **26%** → Valentina **100%**.
 
 #### Biblioteca (`biblioteca.html`) — optional resources (12 demo items)
 
@@ -460,7 +570,7 @@
 
 ---
 
-#### Grupo: Inducción (`induccion.html`) — 6 cursos, locks
+#### Grupo: Inducción (`slug: induccion`) — 6 cursos, `locksEnabled: true`
 
 **Categorías:** Bienvenida y onboarding · Cultura organizacional · Herramientas y sistemas
 
@@ -477,7 +587,7 @@
 
 ---
 
-#### Grupo: Cursos normativos (`cursos-normativos.html`) — 8 cursos, locks
+#### Grupo: Cursos normativos (`slug: cursos-normativos`) — 8 cursos, `locksEnabled: true`
 
 **Categorías:** Ética y compliance · Seguridad y salud · Privacidad y datos · Medio ambiente
 
@@ -498,7 +608,7 @@
 
 ---
 
-#### Grupo: Formación complementaria (`formacion-complementaria.html`) — 6 cursos, no locks
+#### Grupo: Formación complementaria (`slug: formacion-complementaria`) — 6 cursos, `locksEnabled: false`
 
 **Categorías:** Habilidades blandas · Desarrollo profesional · Idiomas · Bienestar
 
@@ -515,7 +625,7 @@
 
 ---
 
-#### Malla: Malla Líder — Ruta 2025 (`mallas.html`) — assigned to demo user
+#### Malla: Programa de Liderazgo (`malla.html?malla=programa-liderazgo`) — assigned to demo user
 
 **Internal grupos (tabs) — 9 cursos total**
 
@@ -535,9 +645,29 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | | MLL-6 | Gestión de equipos remotos | Desarrollo | MLL-5 |
 | **Liderazgo** | MLL-7 | Negociación avanzada | Liderazgo | tab unlock |
 | | MLL-8 | Planificación estratégica | Liderazgo | tab unlock |
-| **Evaluación** | MLL-9 | Evaluación final — Malla Líder | Evaluación | tab unlock |
+| **Evaluación** | MLL-9 | Evaluación final — Programa de Liderazgo | Evaluación | tab unlock |
 
 **Ideal sim Aprobado:** MLL-1 through MLL-4 (Fundamentos complete; Desarrollo tab unlocked with pending items).
+
+---
+
+#### Malla: Gestión de proyectos (`malla.html?malla=gestion-proyectos`) — assigned to demo user
+
+**Internal phases (tabs) — 5 cursos total**
+
+```text
+Diagnóstico ──► Ejecución ──► Certificación
+```
+
+| Tab | ID | Title | Categoría (demo) | Prerequisite |
+|-----|-----|-------|------------------|--------------|
+| **Diagnóstico** | MGP-1 | Fundamentos de gestión de proyectos | Diagnóstico | — |
+| | MGP-2 | Identificación de stakeholders | Diagnóstico | MGP-1 |
+| **Ejecución** | MGP-3 | Planificación y cronograma | Ejecución | tab unlock + — |
+| | MGP-4 | Gestión de riesgos en proyectos | Ejecución | MGP-3 |
+| **Certificación** | MGP-5 | Evaluación — Gestión de proyectos | Certificación | tab unlock |
+
+**Ideal sim Aprobado:** MGP-1 only (Diagnóstico in progress; Ejecución locked).
 
 ---
 
@@ -545,13 +675,18 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 
 | # | Pattern | Where |
 |---|---------|--------|
-| 1 | Curso = base card | All grupo pages + Mallas |
-| 2 | Top-level grupo = sidebar + page | Inducción, Cursos normativos, Complementaria |
-| 3 | Grupo with within-grupo locks | Inducción, Cursos normativos |
+| 1 | Curso = base card | Mis cursos carousels, `grupo.html`, `malla.html` |
+| 2 | Assigned grupo = Mis cursos section + `grupo.html` | Inducción, Cursos normativos, Complementaria (demo) |
+| 3 | Grupo with within-grupo locks (`locksEnabled`) | Inducción, Cursos normativos |
 | 4 | Grupo with no locks | Formación complementaria |
-| 5 | Malla assigned to user | Mallas header + fixtures |
-| 6 | Malla internal grupos (tabs) | Mallas |
-| 7 | Malla between-grupo sequential + parallel | Desarrollo → (Liderazgo ∥ Evaluación) |
+| 10 | Mis cursos hub | Per-grupo carousel sections + **Ver todos** |
+| 11 | Dynamic grupo page | `grupo.html?grupo={slug}` |
+| 12 | Mis mallas hub | Boxed malla sections + phase accordions + compact rows + **Ver más** |
+| 13 | Dynamic malla page | `malla.html?malla={slug}` |
+| 5 | Malla assigned to user | Mis mallas boxed section + **Ver más** → `malla.html` |
+| 6 | Malla internal phases (tabs) | `malla.html` |
+| 6b | Malla hub phase preview (accordions) | `mis-mallas.html` |
+| 7 | Malla between-phase sequential + parallel | Desarrollo → (Liderazgo ∥ Evaluación) |
 | 8 | Within-grupo parallel + join | IND, NOR, MLL Fundamentos |
 | 9 | Categoría independent of grupo | All pages |
 
@@ -562,19 +697,19 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | Screen | HTML file | Layout | UI components | Key data-testid |
 |--------|-----------|--------|---------------|-----------------|
 | Redirect | `index.html` | — | meta refresh | — |
-| Inicio | `inicio.html` | sidebar | hero ring + recent carousel (course cards) \| `.mf-btn-secondary` quick links \| Heroicons \| course modal | `inicio-hero`, `inicio-recientes`, `recent-course-*`, `course-modal`, `inicio-hero-equipo`, `notifications-bell` |
-| Inducción | `induccion.html` | sidebar | course card grid 3-col + filter box + pagination \| modal Ver más \| Heroicons | `induccion-desc`, `course-filters`, `course-grid`, `course-pagination`, `course-modal` |
-| Cursos normativos | `cursos-normativos.html` | sidebar | same as Inducción | `normativos-desc`, `course-filters`, `course-grid`, `course-pagination` |
-| Formación complementaria | `formacion-complementaria.html` | sidebar | course grid all unlocked + filter box + pagination | `complementaria-desc`, `course-filters`, `course-grid`, `course-pagination` |
-| Mallas | `mallas.html` | sidebar | horizontal tabs + course grid \| grupo/curso lock | `mallas-header`, `mallas-tabs`, `course-grid` |
+| Inicio | `inicio.html` | sidebar | hero ring + recent carousel (course cards) \| `.mf-btn-secondary` quick links (incl. **Ver mis cursos**, **Ver mis mallas**) \| Heroicons \| course modal | `inicio-hero`, `inicio-recientes`, `recent-course-*`, `course-modal`, `inicio-hero-cursos`, `inicio-hero-mallas`, `inicio-hero-equipo`, `notifications-bell` |
+| Mis cursos | `mis-cursos.html` | sidebar | `.mf-carousel-section` bordered grupo sections \| carousel strips (all cursos) \| header: **Ver todos** + prev/next \| `academic-cap` nav \| Heroicons | `mis-cursos-desc`, `mis-cursos-sections`, `grupo-carousel-*`, `course-modal` |
+| Grupo (dynamic) | `grupo.html` | sidebar | breadcrumb via Mis cursos \| dynamic title/desc \| filter box + 3-col grid + pagination \| invalid slug → redirect \| Heroicons | `grupo-desc`, `course-filters`, `course-grid`, `course-pagination`, `course-modal` |
+| Mis mallas | `mis-mallas.html` | sidebar | boxed malla cards \| phase accordions (collapsed) + compact rows \| **Ver más** \| Heroicons | `mis-mallas-desc`, `mis-mallas-sections`, `mis-mallas-accordions-*`, `course-modal` |
+| Malla (dynamic) | `malla.html` | sidebar | breadcrumb via Mis mallas \| dynamic title/desc \| horizontal phase tabs + 3-col grid \| invalid slug → redirect \| Heroicons | `mallas-header`, `mallas-tabs`, `course-grid`, `course-modal` |
 | Mi perfil | `mi-perfil.html` | sidebar | profile summary box + badge grid + filter box + table + pagination \| `.mf-btn-table` secondary row action \| status chips \| Heroicons | `perfil-profile`, `perfil-insignias`, `historial-filters`, `historial-table`, `historial-pagination` |
 | Mi equipo | `mi-equipo.html` | sidebar | filter box + sortable table (RUT, org fields, avance bar) + pagination \| `.mf-btn-table` secondary row action \| modal profile + sortable/filterable curso table \| Heroicons | `equipo-filters`, `equipo-table`, `equipo-sort`, `equipo-pagination`, `equipo-modal`, `equipo-modal-profile`, `equipo-modal-filters`, `equipo-modal-table`, `EQUIPO_MEMBERS` |
 | Biblioteca | `biblioteca.html` | sidebar | resource card grid + filter box + pagination \| type-colored icons (`--brand-blue` / `--brand-green` / `--brand-logo-yellow`) \| thematic tabs \| content modal \| Heroicons | `biblioteca-tabs`, `biblioteca-filters`, `resource-grid`, `biblioteca-pagination`, `resource-modal` |
 | Mis favoritos | `mis-favoritos.html` | sidebar | dynamic course-card grid from `mf-bookmarks` + filter box (grupo/estado) + pagination \| `.course-bookmark-btn` on cards \| bookmark in course modal \| Heroicons | `favoritos-desc`, `bookmarks-grid`, `bookmarks-filters`, `bookmarks-pagination`, `course-modal` |
 
-**Removed:** `formacion-base.html`
+**Removed:** `formacion-base.html`, `induccion.html`, `cursos-normativos.html`, `formacion-complementaria.html`, `mallas.html`
 
-**Sidebar order:** Inicio → Inducción → Cursos normativos → Formación complementaria → Mallas → Biblioteca → Mis favoritos → (sep) → Mi perfil → Mi equipo*
+**Sidebar order:** Inicio → Mis cursos → Mis mallas → Biblioteca → Mis favoritos → (sep) → Mi perfil → Mi equipo*
 
 **Stack:** `new-app-moodle` · **Brand:** `masconsultores` · **Icons:** Heroicons inline
 
@@ -663,6 +798,28 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | 1 | 2026-06-08 | Copy: label **Mis guardados** → **Mis favoritos**; screen `mis-guardados.html` → `mis-favoritos.html` (§4.9, §7.6.1, §10) |
 | 1 | 2026-06-08 | Copy: sentence case for sidebar labels and page titles — **Cursos normativos**, **Mi equipo**, **Mi formación** (§7.2, §10; all §10 screens + `mi-formacion.js` GRUPOS labels) |
 | 2 | 2026-06-08 | Released v1 to `releases/v1/`; started v2 at root (HTML updated: —) |
+| 2 | 2026-06-08 | **Gate 1 — Mis cursos:** org-agnostic assigned-grupo hub (`mis-cursos.html`) with per-grupo carousel sections; dynamic `grupo.html?grupo={slug}` replaces static Inducción/Normativos/Complementaria pages; sidebar simplified; **Ver mis cursos** on Inicio; per-grupo `locksEnabled`; `ASSIGNED_GRUPOS` fixture; §1–§10, R8/R13 updated |
+| 2 | 2026-06-08 | **Gate 2 UI approved — Mis cursos:** vertical divider sections; header **Ver todos** + carousel controls right; `academic-cap` sidebar icon; invalid `grupo` slug → `mis-cursos.html` |
+| 2 | 2026-06-08 | **Gate 3 build — Mis cursos:** `mis-cursos.html` + `grupo.html` built; sidebar/nav synced; `ASSIGNED_GRUPOS` + carousel/grid render in `mi-formacion.js`; removed `induccion.html`, `cursos-normativos.html`, `formacion-complementaria.html`; Inicio hero CTA + recientes empty copy; Mis favoritos empty CTA |
+| 2 | 2026-06-08 | **Gate 3 build — Mis mallas:** `mis-mallas.html` + `malla.html` built; sidebar **Mis mallas**; `ASSIGNED_MALLAS` + path stepper/compact rows + phase tabs; demo malla renamed **Programa de Liderazgo**; removed `mallas.html`; §1–§10, R7/R8/R14 updated |
+| 2 | 2026-06-08 | Mis mallas copy: shorter malla description; removed **Mi nivel de rol** badge from hub + detail (§4.5, §4.6, §7.3, §7.3.1, §9) |
+| 2 | 2026-06-08 | Course **Ver más** modal: card-aligned layout (cover, grupo, chips, duration, lock state); shared `mountCourseModal` in JS (§7.6) |
+| 2 | 2026-06-08 | All modals: icon-only **Cerrar** (×) top-right; reuses existing dismiss handlers (§7.6) |
+| 2 | 2026-06-08 | Modals: backdrop click no longer dismisses — close via **×** only (§7.6) |
+| 2 | 2026-06-08 | Modals: removed footer **Cerrar** button; **×** is the sole dismiss control (§7.6) |
+| 2 | 2026-06-08 | Demo: second malla **Gestión de proyectos** (`gestion-proyectos`, 5 cursos); per-malla `mallaSlug` + `upstreamTab`; total mandatory **34** (§1, §4.5, §6, §9, §11) |
+| 2 | 2026-06-08 | Mallas: internal phases as **accordions** (hub + detail); all collapsed by default; replaced path stepper and horizontal tabs (§1, §4.5, §4.6, §6, §7, §10, §11) |
+| 2 | 2026-06-08 | Mis mallas hub: each malla in a bordered card; removed section dividers (§4.5, §10, §11) |
+| 2 | 2026-06-08 | Mis mallas: removed **Ver todos**; hub accordions show full course-card grid (restores original mallas catalog view on hub) (§1, §4.5, §6, §7, §10, §11) |
+| 2 | 2026-06-08 | Restored split: **Mis mallas** hub (accordions + compact rows + **Ver más** → detail); **malla.html** horizontal tabs + course-card grid (§1, §4.5, §4.6, §6, §7, §10, §11) |
+| 2 | 2026-06-08 | **malla.html:** all phase tabs always selectable; locks apply to course cards only (§4.6, §6, §11) |
+| 2 | 2026-06-08 | Inicio hero: sentence-case quick links; added **Ver mis mallas** CTA (§4.2, §6, §7.1, §10) |
+| 2 | 2026-06-08 | Mi perfil insignias: grupo/malla badges → 8 generic achievement badges; `INSIGNIAS_BY_LEVEL` fixture per sim-bar (§4.7, §5 R3, §6, §7.7, §9) |
+| 2 | 2026-06-08 | Mi perfil insignias: unlock criterion moved to hover/focus tooltip (`.mf-insignia-tooltip`); title only on card (§4.7, §7.7) |
+| 2 | 2026-06-08 | Mi perfil insignias: rectangular tiles → circular medallions with title below (§4.7, §7.7) |
+| 2 | 2026-06-08 | Mi perfil insignias: text glyphs → Heroicons inside colored circles (§4.7, §7.7) |
+| 2 | 2026-06-08 | Sidebar collapse toggle: `svg.heroicon.hidden` CSS fix so chevron reflects next state (collapse ← / expand →) instead of showing both icons (§10) |
+| 2 | 2026-06-08 | Carousel sections: Últimos vistos border aligned to hero (`border` + brand tint); `.mf-carousel-section` shared on Inicio and Mis cursos grupo carousels (§10 design registry) |
 
 ---
 
@@ -673,6 +830,6 @@ This PRD and prototype are **client-agnostic**. To deploy for a new organization
 1. Copy `prd.md` (and HTML/css/js/assets) to a new product repo or release.
 2. Update Document Metadata **Client brand** to a kit entry in `templates/brands/{client}/` (or run `/create-brand`).
 3. Re-run **`prototype-assembler`** — swaps logo, fonts, and `--brand-*` tokens only; flows and fixtures stay the same.
-4. Adjust §9 production sources and demo copy as needed; keep grupo/malla structure unless the client scope differs.
+4. Adjust §9 production sources, `ASSIGNED_GRUPOS`, and demo copy as needed; grupo set is assignment-driven — demo uses three grupos unless client scope differs.
 
 **Demo brand for this repo:** `masconsultores` (`--brand-primary: #833d8e` logo purple; site magenta `#75238b` as `--brand-magenta`).

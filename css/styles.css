@@ -181,6 +181,9 @@ svg.heroicon {
   display: block;
   overflow: visible;
 }
+svg.heroicon.hidden {
+  display: none;
+}
 .heroicon svg {
   width: 100%;
   height: 100%;
@@ -380,8 +383,10 @@ button.mf-btn-table {
   background: var(--brand-surface, #f7f9fc);
   border-color: color-mix(in srgb, var(--brand-primary, #833d8e) 18%, #e4e4e7);
 }
+.mf-carousel-section,
 .inicio-recientes {
-  border-color: color-mix(in srgb, var(--brand-primary, #833d8e) 28%, #e4e4e7);
+  background: #fff;
+  border-color: color-mix(in srgb, var(--brand-primary, #833d8e) 18%, #e4e4e7);
 }
 .inicio-recent-track {
   scroll-snap-type: x mandatory;
@@ -439,6 +444,100 @@ button.mf-btn-table {
   color: var(--brand-primary);
 }
 
+/* Mi Formación — Mi perfil achievement insignias */
+.mf-insignia-card {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 9999px;
+  border: 2px solid var(--brand-border, #e4e4e7);
+  background-color: #f4f4f5;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.mf-insignia-card--earned {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #fff;
+}
+.mf-insignia-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.mf-insignia-card--earned .mf-insignia-icon .heroicon {
+  stroke: #fff;
+}
+.mf-insignia-card:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+.mf-insignia-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.375rem);
+  transform: translateX(-50%);
+  z-index: 20;
+  width: max-content;
+  max-width: 11rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--brand-border, #e4e4e7);
+  background-color: #fff;
+  color: #374151;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+.mf-insignia-card:hover .mf-insignia-tooltip,
+.mf-insignia-card:focus-visible .mf-insignia-tooltip,
+.mf-insignia-card:focus-within .mf-insignia-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mi Formación — course preview modal (Ver más) */
+.course-modal-panel {
+  border: 1px solid var(--brand-border, #e4e4e7);
+}
+.course-modal-cover {
+  isolation: isolate;
+}
+.course-modal--locked .course-modal-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35) 0%, transparent 45%);
+  pointer-events: none;
+}
+.course-modal-body h2 {
+  font-family: var(--brand-font-heading);
+}
+.course-modal-bookmark {
+  backdrop-filter: blur(4px);
+}
+.mf-modal-close {
+  color: var(--brand-foreground, #0a0a0a);
+}
+.course-modal-close {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: transparent;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(4px);
+}
+.course-modal-close:hover:not(:disabled) {
+  background-color: #ffffff;
+}
+
 /* Mi Formación — Biblioteca resource cards (icon-led; not course cover cards) */
 .resource-card-icon {
   display: flex;
@@ -471,4 +570,21 @@ button.mf-btn-table {
 .resource-card[data-mf-resource-type] .resource-type-chip {
   background: color-mix(in srgb, var(--resource-type-color) 12%, #ffffff);
   color: var(--resource-type-color);
+}
+
+/* Mi Formación — Malla detail tabs: lock icon inline with label */
+[data-mf-malla-tab] .malla-tab-lock-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Mi Formación — Malla phase accordions (hub + detail) */
+.mf-accordion-chevron--open {
+  transform: rotate(180deg);
+}
+.mis-mallas-compact-row--locked:last-child {
+  border-bottom: none;
+}
+.mis-mallas-phase-courses .mis-mallas-compact-row:last-child {
+  border-bottom: none;
 }
