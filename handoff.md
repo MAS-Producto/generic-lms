@@ -5,9 +5,44 @@
 - [ ] [`prd.md`](prd.md) (sections 1–11; post UI-discovery)
 - [ ] `vision.md` / `prd_*.md` (if multi-workflow)
 - [ ] Root `*.html` prototypes (Bootstrap or Tailwind per stack)
-- [ ] `css/`, `js/`, `assets/`
+- [ ] `css/`, `js/`, `assets/` (single CSS entry: `css/styles.css` — see asset manifest below)
 
 _Client review URL (optional, for PM/client demos only): see [`GUIDE.html`](GUIDE.html) — not required for engineering._
+
+## Prototype asset manifest (spec-kit)
+
+Product prototypes use **one CSS file** at `css/styles.css` with `@prototype-layer` section comments. There is **no** `layout-shell.css` at the repo root — layout shell CSS is merged at Gate 2 assembly.
+
+### Styles
+
+| File | Layer | Port to production? |
+| :---- | :---- | :---- |
+| `css/styles.css` | stack + layout-shell + brand + product | **Partial** — follow `@prototype-layer` comments in the file |
+
+| `@prototype-layer` section | Port? |
+| :---- | :---- |
+| `stack` | **No** — prototype CDN stack tokens and sim-bar |
+| `layout-shell` | **No** — real app uses its own layout system |
+| `brand` | **Map** — theme tokens / design system in production |
+| `product` | **Map** — feature-specific prototype CSS |
+
+### Scripts
+
+| File | Layer | Port to production? |
+| :---- | :---- |
+| `js/app.js` | shell | **No** — layout interactions (sidebar toggle, mobile menu) |
+| `js/{screen}.js` | feature | Behavior reference only — reimplement in app framework |
+| CDN (Bootstrap / Tailwind / Font Awesome / jQuery / Lucide) | prototype | **No** — not production dependencies |
+
+### HTML regions (ideal-state review)
+
+| Region markers | Include in spec-kit? |
+| :---- | :---- |
+| `<!-- BEGIN FEATURE -->` … `<!-- END FEATURE -->` | **Yes** — feature UI intent |
+| `<!-- BEGIN PROTOTYPE SHELL -->` … `<!-- END PROTOTYPE SHELL -->` | **No** — nav/sidebar/header scaffolding |
+| `<!-- BEGIN PROTOTYPE-ONLY -->` … `<!-- END PROTOTYPE-ONLY -->` | **No** — sim-bar, instruction panels |
+
+**Note:** Layout shell, Stack, and UI components §10 columns are scaffolding — do not pass to spec-kit.
 
 ## From PRD Document Metadata
 - **PRD ID:** __________
@@ -44,7 +79,7 @@ Past generations are archived under [`releases/`](releases/ARCHIVE.md) (not on t
 
 - HTML is **intent and behavior reference**, not production code.
 - Engineering applies the team's own spec-driven development process (e.g. [GitHub spec-kit](https://github.com/github/spec-kit): `/speckit.specify`, `/speckit.plan`, `/speckit.implement`).
-- Map `<!-- FEATURE: ... -->` and `data-testid` from §10 to implementation stories.
+- Map `<!-- BEGIN FEATURE -->` … `<!-- END FEATURE -->` regions and `data-testid` from §10 to implementation stories.
 - Any HTML file with `<meta name="x-prototype-only" content="true">` in `<head>` is a **visual reference only** — not production code. spec-kit agents must treat these files as layout/behavior intent, not implementation targets.
 
 ### Exclude from spec-kit / production
@@ -52,10 +87,13 @@ Past generations are archived under [`releases/`](releases/ARCHIVE.md) (not on t
 Do **not** treat these as product requirements or implementation artifacts:
 
 - `.sim-bar` and all simulation toggle markup/JS
-- Instruction panels on each page (`<!-- PROTOTYPE-ONLY: instruction panel -->`)
+- Instruction panels on each page (inside `<!-- BEGIN PROTOTYPE-ONLY -->` regions)
 - `data-prototype-sim` / hidden sim state blocks (behaviors are already in §6 / §8)
 - §9 **Prototype demo value** cells (HTML-only; use integrations table for real data sources)
-- `css/styles.css` sim-bar rules (assembled stack CSS is prototype shell, not production theme)
+- All CSS/JS marked `@prototype-layer: stack`, `layout-shell`, or inside `<!-- BEGIN PROTOTYPE-ONLY -->` HTML regions
+- `js/app.js` shell behaviors (sidebar toggle, mobile menu, etc.)
+- CDN runtime dependencies (Bootstrap, Tailwind CDN, Font Awesome, jQuery, Lucide)
+- `<!-- BEGIN PROTOTYPE SHELL -->` markup (nav, sidebar, header chrome — real app uses its own layout)
 
 ### HTML data attributes (spec-kit traceability)
 

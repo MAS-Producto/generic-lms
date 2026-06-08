@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-prototype-only" content="true">
   <title>Biblioteca — Mi Formación</title>
-  <link href="layout-shell.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{background:'#fff',foreground:'#0a0a0a',muted:'#f4f4f5','muted-foreground':'#71717a',accent:'#f4f4f5',border:'#e4e4e7',sidebar:'#fafafa','sidebar-foreground':'#0a0a0a','sidebar-accent':'#f4f4f5','sidebar-border':'#e4e4e7'},fontFamily:{sans:['var(--brand-font-body)','ui-sans-serif','system-ui','sans-serif']}}}};</script>
@@ -110,12 +109,12 @@
                 <option value="imagen">Imagen</option>
               </select>
             </div>
-            <button type="button" data-mf-biblioteca-filter-clear class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50">Limpiar filtros</button>
+            <button type="button" data-mf-biblioteca-filter-clear class="mf-btn-secondary">Limpiar filtros</button>
           </div>
         </div>
         <div data-mf-biblioteca-filter-empty class="hidden text-center py-12 border border-dashed border-gray-300 rounded-lg bg-white mb-4">
           <h3 class="text-base font-medium text-gray-900">No se encontraron recursos</h3>
-          <p class="text-sm text-gray-500 mt-2">Prueba con otro título o tipo, o <button type="button" data-mf-biblioteca-filter-clear class="text-gray-900 font-medium underline">limpiar filtros</button>.</p>
+          <p class="text-sm text-gray-500 mt-2">Prueba con otro título o tipo, o <button type="button" data-mf-biblioteca-filter-clear class="mf-btn-link">limpiar filtros</button>.</p>
         </div>
         <div data-testid="resource-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <!-- Onboarding: documento + video + imagen -->
@@ -125,7 +124,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Documento</span>
               <h3 class="font-medium text-gray-900">Manual de onboarding</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Guía en PDF con procesos, contactos y primeros pasos para nuevos colaboradores.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-1" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-1" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-4" data-mf-resource-tab="onboarding" data-mf-resource-type="video" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -134,7 +133,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Video</span>
               <h3 class="font-medium text-gray-900">Mensaje de bienvenida — CEO</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Saludo institucional y expectativas para quienes se integran a la organización.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-4" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-4" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-5" data-mf-resource-tab="onboarding" data-mf-resource-type="imagen" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -143,7 +142,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Imagen</span>
               <h3 class="font-medium text-gray-900">Mapa de oficinas y servicios</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Plano de la sede con áreas comunes, RR. HH. y puntos de apoyo al colaborador.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-5" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-5" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <!-- Seguridad: video + imagen + documento -->
@@ -153,7 +152,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Video</span>
               <h3 class="font-medium text-gray-900">Buenas prácticas de seguridad</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Prevención de riesgos y conducta segura en planta y oficina.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-2" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-2" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-3" data-mf-resource-tab="seguridad" data-mf-resource-type="imagen" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -162,7 +161,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Imagen</span>
               <h3 class="font-medium text-gray-900">Señalización de seguridad en planta</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Rutas de evacuación, puntos de encuentro y señales obligatorias.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-3" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-3" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-6" data-mf-resource-tab="seguridad" data-mf-resource-type="documento" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -171,7 +170,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Documento</span>
               <h3 class="font-medium text-gray-900">Protocolo de emergencias</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Pasos ante incendio, sismo o derrame según el área de trabajo.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-6" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-6" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <!-- Liderazgo: documento + video + imagen -->
@@ -181,7 +180,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Documento</span>
               <h3 class="font-medium text-gray-900">Guía de feedback 1:1</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Plantilla y buenas prácticas para reuniones individuales con el equipo.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-7" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-7" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-8" data-mf-resource-tab="liderazgo" data-mf-resource-type="video" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -190,7 +189,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Video</span>
               <h3 class="font-medium text-gray-900">Comunicación asertiva para líderes</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Técnicas para dar contexto, pedir compromisos y cerrar acuerdos.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-8" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-8" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-9" data-mf-resource-tab="liderazgo" data-mf-resource-type="imagen" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -199,7 +198,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Imagen</span>
               <h3 class="font-medium text-gray-900">Matriz de delegación</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Esquema visual para definir qué decisiones delegar según impacto y urgencia.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-9" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-9" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <!-- Herramientas: documento + video + imagen -->
@@ -209,7 +208,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Documento</span>
               <h3 class="font-medium text-gray-900">Manual de Microsoft Teams</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Canales, reuniones y archivos compartidos en el entorno corporativo.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-10" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-10" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-11" data-mf-resource-tab="herramientas" data-mf-resource-type="video" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -218,7 +217,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Video</span>
               <h3 class="font-medium text-gray-900">Primeros pasos en SAP</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Recorrido por módulos frecuentes y consultas básicas del día a día.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-11" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-11" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
           <article data-mf-resource="BIB-12" data-mf-resource-tab="herramientas" data-mf-resource-type="imagen" class="resource-card rounded-lg border border-gray-200 bg-white flex flex-col overflow-hidden">
@@ -227,7 +226,7 @@
               <span class="resource-type-chip inline-flex self-start rounded-full px-2 py-0.5 text-xs font-medium mb-2">Imagen</span>
               <h3 class="font-medium text-gray-900">Atajos de teclado — productividad</h3>
               <p class="text-sm text-gray-500 mt-1 flex-1">Referencia rápida para Outlook, Excel y navegador corporativo.</p>
-              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-12" class="mt-4 w-full rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Ver</button>
+              <button type="button" data-mf-resource-ver data-mf-resource-id="BIB-12" class="mt-4 mf-btn-primary w-full">Ver</button>
             </div>
           </article>
         </div>
@@ -244,14 +243,14 @@
           <div class="flex flex-wrap items-center gap-3">
             <span data-mf-biblioteca-page-info class="text-sm text-gray-600">Página 1 de 1</span>
             <nav aria-label="Paginación de recursos" class="flex items-center gap-1">
-              <button type="button" data-mf-biblioteca-page-prev class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none" disabled>Anterior</button>
-              <button type="button" data-mf-biblioteca-page-next class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none">Siguiente</button>
+              <button type="button" data-mf-biblioteca-page-prev class="mf-btn-secondary mf-btn-pagination" disabled>Anterior</button>
+              <button type="button" data-mf-biblioteca-page-next class="mf-btn-secondary mf-btn-pagination">Siguiente</button>
             </nav>
           </div>
         </div>
         <div data-mf-biblioteca-empty class="hidden text-center py-12 border border-dashed border-gray-300 rounded-lg bg-gray-50">
           <h3 class="text-base font-medium text-gray-900">No hay recursos en esta categoría</h3>
-          <p class="text-sm text-gray-500 mt-2">Prueba otra categoría o vuelve a <button type="button" data-mf-biblioteca-show-all class="text-gray-900 font-medium underline">Todos</button> para ver el catálogo completo.</p>
+          <p class="text-sm text-gray-500 mt-2">Prueba otra categoría o vuelve a <button type="button" data-mf-biblioteca-show-all class="mf-btn-link">Todos</button> para ver el catálogo completo.</p>
         </div>
         <!-- /FEATURE: biblioteca -->
 
@@ -267,7 +266,7 @@
         <p class="mt-1 text-sm"><span data-mf-resource-modal-type class="font-medium text-gray-700"></span> · <span data-mf-resource-modal-meta class="text-gray-500"></span></p>
         <div data-mf-resource-modal-content class="mt-4" aria-label="Contenido del recurso"></div>
         <div class="mt-6 flex justify-end">
-          <button type="button" data-mf-resource-modal-close class="rounded-md border border-gray-300 px-4 py-2 text-sm">Cerrar</button>
+          <button type="button" data-mf-resource-modal-close class="mf-btn-secondary">Cerrar</button>
         </div>
       </div>
     </div>

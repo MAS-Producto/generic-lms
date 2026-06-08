@@ -54,7 +54,7 @@
 
 **Prerequisite types:**
 
-1. **Within-grupo (curso locks):** Applies to **Inducción**, **Cursos Normativos**, and **Mallas** internal grupos. A curso is locked until prerequisite cursos in the **same grupo/page or same malla tab** are **Aprobado**.
+1. **Within-grupo (curso locks):** Applies to **Inducción**, **Cursos Normativos**, and **Mallas** internal grupos. A curso is locked until prerequisite cursos in the **same grupo/page or same malla tab** are **Aprobado**. **Exception (prototype):** cursos **En proceso**, **Reprobado**, or **Aprobado** are never locked — the user can continue or retry.
 2. **Between-grupos (Mallas only):** Internal malla tab B unlocks after tab A is fully **Aprobado**. Parallel tabs allowed (no edge between them).
 3. **Top-level grupos (Inducción, Cursos Normativos, Complementaria):** **no prerequisites between each other** — each sidebar page is always accessible. **Formación complementaria** has no within-grupo locks.
 
@@ -155,15 +155,16 @@
 
 ### 4.7 Mi perfil (`mi-perfil.html`)
 
+- **Profile summary box** (same layout as Mi Equipo modal profile): avatar placeholder with initials, nombre, RUT/DNI, cargo, gerencia/área/familia de cargo, **Avance general** doughnut ring — driven by sim-bar (same calculation as Inicio hero).
 - **Insignias:** one per top-level grupo (**Inducción**, **Cursos Normativos**, **Formación complementaria**) + **Mallas** (current role); locked until grupo/malla fully **Aprobado**.
-- **Historial** (mandatory cursos only): **filter box** — **Buscar** (curso) · **Categoría** · **Estado** · **Limpiar filtros**; filter empty state; table with status chips; **pagination** (6 / 12 / 24 per page, default **6**).
+- **Historial** (mandatory cursos **finalizados** only — **Aprobado** or **Reprobado**; excludes Sin actividad / En proceso): **filter box** — **Buscar** (ID o curso) · **Categoría** (grupo) · **Estado** (**Todos** / **Aprobado** / **Reprobado**) · **Limpiar filtros**; catalog empty state when none finalized; filter empty state; table columns **ID**, **Curso**, **Categoría** (grupo only), **Estado**, **Fecha finalización**, **Certificado** (**Descargar** when **Aprobado**; — otherwise); **pagination** (6 / 12 / 24 per page, default **6**). Rows from `historialCourseIds()` via `renderHistorialTable()` on sim-bar change (same estado source as grupo cards).
 
 ### 4.8 Mi equipo (`mi-equipo.html`)
 
 - **Filter box** (same pattern as grupo/Biblioteca): **Buscar** (RUT/DNI, nombre, gerencia, área, cargo, familia de cargo) · **Gerencia** · **Área** · **Familia de cargo** · **Limpiar filtros**; filter empty state when no rows match.
 - Table of direct reports — columns (in order): **RUT/DNI**, **Nombre**, **Gerencia**, **Área**, **Cargo**, **Familia de cargo**, **Avance general** (brand progress bar + %), **Acciones**. All columns except **Acciones** are **sortable** (click header toggles asc/desc; default **Nombre** ascending; **Avance general** defaults to descending on first click).
 - **Avance general** per row = share of all mandatory cursos assigned to that user (**Aprobado** / 29 in demo) — same calculation as **Inicio** overall progress for that user (not the supervisor’s sim-bar state).
-- Row action **Ver cursos** as primary button (`.mf-btn-primary`; not text link).
+- Row action **Ver cursos** as secondary table button (`.mf-btn-table`; not text link).
 - **Pagination** on filtered rows: page size **6 / 12 / 24** (default **6**), **Anterior** / **Siguiente**, *Página N de M*.
 - **Ver cursos** modal: **profile box** (avatar placeholder with initials, like navbar; nombre, RUT/DNI, cargo, gerencia/área/familia, **Avance general** doughnut ring — same SVG pattern as Inicio hero) + **filter box** (**Buscar** by ID or curso · **Categoría** = grupo: Inducción / Cursos Normativos / Formación complementaria / Mallas · **Estado** · **Limpiar filtros**) + **sortable table** (columns **ID**, **Curso**, **Categoría**, **Estado**; same table/sort/pagination pattern as main Mi Equipo table; per-member fixture, independent of supervisor sim-bar).
 
@@ -192,11 +193,13 @@
 | R8 | **No cross-links** between top-level grupos (Inducción ⊥ Cursos Normativos ⊥ Complementaria ⊥ Mallas at navigation level). |
 | R9 | **Biblioteca** excluded from progress, badges, historial mandatory rows, notifications. |
 | R10 | **Mi Equipo** only with ≥1 direct report. |
-| R11 | **Historial** = mandatory cursos only. |
+| R11 | **Historial** = mandatory cursos **finalizados** (**Aprobado** or **Reprobado** only). |
 
 ---
 
 ## 6. SCENARIO TABLE (ACCEPTANCE)
+
+*Each row is one acceptance scenario. For spec-kit handoff, map columns to Given/When/Then: **IF THE USER...** → When (action); **AND THE CONDITION IS...** → Given (state/condition); **THE SYSTEM MUST...** → Then (outcome). See `handoff.md` for a worked example.*
 
 | IF THE USER… | AND… | THE SYSTEM MUST… |
 |--------------|------|------------------|
@@ -296,12 +299,17 @@
 - Title, categoría, duration, description, prerequisites when locked
 - Footer: **Cerrar**; **Acceder** (disabled when locked)
 
-### 7.7 Mi perfil — historial
+### 7.7 Mi perfil
 
 | Element | Copy / behavior |
 |---------|-----------------|
 | Page helper | *Insignias por grupo y registro de cursos obligatorios completados.* |
-| Filter toolbar | **Buscar** (placeholder *Buscar por curso…*) · **Categoría** (dynamic from rows) · **Estado** (**Todos** / **Aprobado** / **Pendiente**) · **Limpiar filtros** |
+| Profile summary | Avatar initials · nombre · RUT/DNI · cargo · gerencia · área · familia de cargo · **Avance general** doughnut (sim-bar; `CURRENT_USER` fixture) |
+| Historial section heading | **Mi historial de formación** |
+| Filter toolbar | **Buscar** (placeholder *Buscar por ID o curso…*) · **Categoría** (grupo; dynamic from rows) · **Estado** (**Todos** / **Aprobado** / **Reprobado**) · **Limpiar filtros** (hidden when catalog empty) |
+| Catalog empty (heading) | *Aún no hay cursos finalizados* |
+| Catalog empty (helper) | *Cuando completes un curso obligatorio con estado **Aprobado** o **Reprobado**, aparecerá en este historial.* |
+| Historial table columns | **ID** · **Curso** · **Categoría** (grupo name only) · **Estado** (chips) · **Fecha finalización** · **Certificado** (**Descargar** `.mf-btn-table` secondary if Aprobado; — otherwise) |
 | Filter empty (heading) | *No se encontraron cursos en el historial* |
 | Filter empty (helper) | *Prueba con otro título, categoría o estado, o **limpiar filtros**.* |
 | Pagination | **Mostrar** (6 / 12 / 24 por página) · *Página N de M* · **Anterior** · **Siguiente** |
@@ -316,7 +324,7 @@
 | Sortable headers | All columns except **Acciones** — centered in `<thead>`; body cells **left-aligned**; button per `<th>` with `aria-sort`; chevron indicators; `.mf-table-sort-btn--active` uses `--brand-primary` |
 | Filter empty (heading) | *No se encontraron colaboradores* |
 | Filter empty (helper) | *Prueba con otros criterios de búsqueda o filtros, o **limpiar filtros**.* |
-| Row action | **Ver cursos** (`.mf-btn-primary` in table) |
+| Row action | **Ver cursos** (`.mf-btn-table` secondary in **Acciones** column) |
 | Pagination | **Mostrar** (6 / 12 / 24 por página) · *Página N de M* · **Anterior** · **Siguiente** |
 
 **Modal (Ver cursos):** profile box (avatar placeholder + org fields + avance doughnut ring) · filter toolbar (**Buscar** *ID o nombre del curso…* · **Categoría** · **Estado** · **Limpiar filtros**) · sortable table **ID** · **Curso** · **Categoría** (grupo) · **Estado** (chips: Aprobado / En proceso / Pendiente / Reprobado) · pagination (6/12/24). Per-member `EQUIPO_MEMBERS` fixture; independent of supervisor sim-bar.
@@ -374,7 +382,11 @@
 
 **Demo user:** María González · **Líder** · malla **Malla Líder — Ruta 2025**
 
+**`CURRENT_USER` (Mi perfil summary):** RUT `10.234.567-8` · cargo *Jefa de capacitación y desarrollo* · Gerencia Corporativa · RR.HH. · Administración y soporte. **Avance general** = sim-bar progress (`progressPercent()` = Aprobado / 29).
+
 **Totals:** 6 + 8 + 6 + 9 = **29** mandatory cursos. **Ideal sim:** **13 Aprobado** (4 Inducción + 3 Cursos Normativos + 2 Complementaria + 4 Malla).
+
+**Prototype-wide progress (logged-in user):** `APPROVED_BY_LEVEL`, `EN_PROCESO_BY_LEVEL`, and `REPROBADO_BY_LEVEL` keyed by sim-bar **0% / 45% / 100%**; `sanitizeProgressFixtures()` keeps sets disjoint. `getCourseEstadoKey()` drives Inicio tiles, grupo/Malla cards, insignias, notifications, and profile avance. **Mi historial** lists only finalized rows (`historialCourseIds()` = **Aprobado** or **Reprobado**). **Mi Equipo** table/modal use separate `EQUIPO_MEMBERS` per-report fixtures.
 
 **Course card covers (16:9):** Temporary placeholders at `assets/images/courses/{course-id}.jpg` (see folder README). Loaded via `courseCoverUrl()` in `mi-formacion.js`. **Replace files in place** when client provides real cover art — same filenames, no code change. Production LMS cover source is `TBD (needs confirmation)`.
 
@@ -433,7 +445,9 @@
 | NOR-7 | Diversidad e inclusión | Ética y compliance | NOR-5 |
 | NOR-8 | Reporte de incidentes | Seguridad y salud | NOR-6 |
 
-**Ideal sim Aprobado:** NOR-1 through NOR-3.
+**Ideal sim (45%):** **Aprobado** NOR-1–NOR-4 · **En proceso** NOR-5 · **Reprobado** NOR-6 (requiere NOR-4 aprobado) · **Bloqueados** NOR-7 (requiere NOR-5) y NOR-8 (requiere NOR-6 aprobado).
+
+**Lock graph:** NOR-1 → NOR-2 ∥ NOR-3 → NOR-4 → NOR-5 ∥ NOR-6 → NOR-7 / NOR-8 (cadena vía NOR-6).
 
 ---
 
@@ -506,8 +520,8 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | Cursos Normativos | `cursos-normativos.html` | sidebar | same as Inducción | `normativos-desc`, `course-filters`, `course-grid`, `course-pagination` |
 | Formación complementaria | `formacion-complementaria.html` | sidebar | course grid all unlocked + filter box + pagination | `complementaria-desc`, `course-filters`, `course-grid`, `course-pagination` |
 | Mallas | `mallas.html` | sidebar | horizontal tabs + course grid \| grupo/curso lock | `mallas-header`, `mallas-tabs`, `course-grid` |
-| Mi perfil | `mi-perfil.html` | sidebar | badge grid + filter box + table + pagination \| status chips \| Heroicons | `perfil-insignias`, `historial-filters`, `historial-table`, `historial-pagination` |
-| Mi equipo | `mi-equipo.html` | sidebar | filter box + sortable table (RUT, org fields, avance bar) + pagination \| `mf-btn-primary` row btn \| modal profile + sortable/filterable curso table \| Heroicons | `equipo-filters`, `equipo-table`, `equipo-sort`, `equipo-pagination`, `equipo-modal`, `equipo-modal-profile`, `equipo-modal-filters`, `equipo-modal-table`, `EQUIPO_MEMBERS` |
+| Mi perfil | `mi-perfil.html` | sidebar | profile summary box + badge grid + filter box + table + pagination \| `.mf-btn-table` secondary row action \| status chips \| Heroicons | `perfil-profile`, `perfil-insignias`, `historial-filters`, `historial-table`, `historial-pagination` |
+| Mi equipo | `mi-equipo.html` | sidebar | filter box + sortable table (RUT, org fields, avance bar) + pagination \| `.mf-btn-table` secondary row action \| modal profile + sortable/filterable curso table \| Heroicons | `equipo-filters`, `equipo-table`, `equipo-sort`, `equipo-pagination`, `equipo-modal`, `equipo-modal-profile`, `equipo-modal-filters`, `equipo-modal-table`, `EQUIPO_MEMBERS` |
 | Biblioteca | `biblioteca.html` | sidebar | resource card grid + filter box + pagination \| type-colored icons (`--brand-blue` / `--brand-green` / `--brand-logo-yellow`) \| thematic tabs \| content modal \| Heroicons | `biblioteca-tabs`, `biblioteca-filters`, `resource-grid`, `biblioteca-pagination`, `resource-modal` |
 
 **Removed:** `formacion-base.html`
@@ -565,6 +579,18 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | 1 | 2025-06-04 | Mi Equipo: **Ver cursos** row action uses `.mf-btn-primary` |
 | 1 | 2025-06-04 | Mi Equipo modal: profile box (avatar initials) + sortable/filterable/paginated curso table (ID, Curso, Categoría, Estado); replaced accordion panels |
 | 1 | 2025-06-04 | Mi Equipo modal: **Avance general** uses doughnut ring (Inicio hero SVG pattern) instead of progress bar |
+| 1 | 2025-06-04 | Mi perfil: profile summary box (same as Mi Equipo modal profile; `CURRENT_USER` + sim-bar avance doughnut) |
+| 1 | 2025-06-04 | Mi perfil: historial section heading **Mi historial de formación** (was *Historial de formación obligatoria*) |
+| 1 | 2025-06-04 | Mi perfil historial: columns ID, Curso, Categoría (grupo), Estado, Fecha finalización, Certificado (Descargar); categoría filter = grupo |
+| 1 | 2025-06-04 | Prototype-wide button system in `css/styles.css`: `.mf-btn-primary`, `.mf-btn-secondary`, `.mf-btn-sm`, `.mf-btn-pagination`, `.mf-btn-icon`, `.mf-btn-link` applied on all §10 screens |
+| 1 | 2025-06-04 | Mi perfil historial + Mi Equipo table row actions aligned via `.mf-btn-table` (primary compact; left-aligned action cells) |
+| 1 | 2025-06-04 | `.mf-btn-table` restyled as secondary (outline) for all table row actions |
+| 1 | 2026-06-04 | Kit migrate: aligned product docs with kit template (kit commit `5e1f2be`) |
+| 1 | 2026-06-04 | `prototype-assembler` re-run: `css/styles.css` four `@prototype-layer` sections (stack + layout-shell + brand + product); refreshed `js/app.js` and `assets/images/logo.svg`; removed root `layout-shell.css`; all screens link only `css/styles.css` |
+| 1 | 2026-06-04 | Cross-page data alignment: historial renders all 29 mandatory cursos from shared sim fixtures; Estado filter matches grupo pages; `sanitizeProgressFixtures()`; §4.7 / §9.2 updated |
+| 1 | 2026-06-04 | Mi historial: only finalized cursos (**Aprobado** / **Reprobado**); catalog empty state at 0%; Estado filter reduced to Todos / Aprobado / Reprobado |
+| 1 | 2026-06-04 | Sim consistency: `isCourseEngaged()` — En proceso / Reprobado / Aprobado never locked; strip en-proceso from locked slots in fixtures; removed NOR-5 from 45% en-proceso (prereq NOR-4 not aprobado) |
+| 1 | 2026-06-04 | Normativos 45% fixtures aligned to lock graph (NOR-4 aprobado, NOR-5 en proceso, NOR-6 reprobado); strip reprobado on locked slots; grupo progress on `cursos-normativos.html` |
 
 ---
 

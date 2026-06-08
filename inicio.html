@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-prototype-only" content="true">
   <title>Inicio — Mi Formación</title>
-  <link href="layout-shell.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -91,7 +90,7 @@
         <div data-mf-congrats data-testid="inicio-congrats" class="hidden mb-6 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-900" role="status" aria-live="polite">
           <p class="font-semibold">¡Felicitaciones!</p>
           <p class="mt-1">Completaste toda tu formación obligatoria.</p>
-          <button type="button" data-mf-congrats-dismiss class="mt-2 text-sm underline text-green-800">Entendido</button>
+          <button type="button" data-mf-congrats-dismiss class="mf-btn-link text-green-800 mt-2">Entendido</button>
         </div>
 
         <section data-testid="inicio-hero" class="inicio-hero mb-6 rounded-lg border p-6 lg:p-8">
@@ -108,8 +107,8 @@
                 <h1 class="text-2xl font-semibold tracking-tight text-gray-900" style="font-family: var(--brand-font-heading)">Hola, <span data-mf-user-name>María González</span></h1>
                 <p data-mf-welcome-subtitle class="mt-2 text-gray-600 max-w-xl">Continúa tu formación obligatoria.</p>
                 <div class="mt-4 flex flex-wrap justify-center sm:justify-start gap-2">
-                  <a href="mi-perfil.html" class="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/80">Ir a Mi perfil</a>
-                  <a href="mi-equipo.html" data-testid="inicio-hero-equipo" class="inline-flex items-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-white/80">Ver Mi Equipo</a>
+                  <a href="mi-perfil.html" class="mf-btn-secondary">Ir a Mi perfil</a>
+                  <a href="mi-equipo.html" data-testid="inicio-hero-equipo" class="mf-btn-secondary">Ver Mi Equipo</a>
                 </div>
               </div>
             </div>
@@ -131,10 +130,10 @@
               <p class="text-sm text-gray-500 mt-0.5">Retoma donde lo dejaste en tu última sesión</p>
             </div>
             <div class="flex items-center gap-1 shrink-0">
-              <button type="button" data-mf-recent-prev class="p-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none" aria-label="Desplazar cursos anteriores">
+              <button type="button" data-mf-recent-prev class="mf-btn-icon" aria-label="Desplazar cursos anteriores">
                 <svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
               </button>
-              <button type="button" data-mf-recent-next class="p-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none" aria-label="Desplazar cursos siguientes">
+              <button type="button" data-mf-recent-next class="mf-btn-icon" aria-label="Desplazar cursos siguientes">
                 <svg class="heroicon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
               </button>
             </div>
@@ -164,7 +163,7 @@
                   <p class="text-sm text-gray-500 mt-2"><span data-mf-tile-count="induccion">4 de 6</span> cursos</p>
                 </div>
               </div>
-              <a href="induccion.html" class="inline-flex mt-4 items-center rounded-md mf-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90">Ver cursos</a>
+              <a href="induccion.html" class="mf-btn-primary mt-4">Ver cursos</a>
             </article>
             <article data-mf-tile="normativos" class="group border border-gray-200 rounded-lg p-4 transition-shadow hover:shadow-md hover:border-gray-300">
               <div class="flex items-start gap-3">
@@ -180,7 +179,7 @@
                   <p class="text-sm text-gray-500 mt-2"><span data-mf-tile-count="normativos">3 de 8</span> cursos</p>
                 </div>
               </div>
-              <a href="cursos-normativos.html" class="inline-flex mt-4 items-center rounded-md mf-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90">Ver cursos</a>
+              <a href="cursos-normativos.html" class="mf-btn-primary mt-4">Ver cursos</a>
             </article>
             <article data-mf-tile="complementaria" class="group border border-gray-200 rounded-lg p-4 transition-shadow hover:shadow-md hover:border-gray-300">
               <div class="flex items-start gap-3">
@@ -196,7 +195,7 @@
                   <p class="text-sm text-gray-500 mt-2"><span data-mf-tile-count="complementaria">2 de 6</span> cursos</p>
                 </div>
               </div>
-              <a href="formacion-complementaria.html" class="inline-flex mt-4 items-center rounded-md mf-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90">Ver cursos</a>
+              <a href="formacion-complementaria.html" class="mf-btn-primary mt-4">Ver cursos</a>
             </article>
             <article data-mf-tile="malla" class="group border border-gray-200 rounded-lg p-4 transition-shadow hover:shadow-md hover:border-gray-300">
               <div class="flex items-start gap-3">
@@ -214,7 +213,7 @@
                   <div data-mf-malla-tile-rows class="mt-2 border-t border-gray-100 pt-2"></div>
                 </div>
               </div>
-              <a href="mallas.html" class="inline-flex mt-4 items-center rounded-md mf-btn-primary px-4 py-2 text-sm font-medium text-white hover:opacity-90">Ver cursos</a>
+              <a href="mallas.html" class="mf-btn-primary mt-4">Ver cursos</a>
             </article>
           </div>
         </section>
@@ -244,8 +243,8 @@
         <p data-mf-modal-desc class="mt-3 text-sm text-gray-600"></p>
         <p data-mf-modal-prereqs class="hidden mt-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-md p-2"></p>
         <div class="mt-6 flex gap-2 justify-end">
-          <button type="button" data-mf-modal-close class="rounded-md border border-gray-300 px-4 py-2 text-sm">Cerrar</button>
-          <button type="button" data-mf-modal-acceder class="rounded-md mf-btn-primary px-4 py-2 text-sm text-white">Acceder</button>
+          <button type="button" data-mf-modal-close class="mf-btn-secondary">Cerrar</button>
+          <button type="button" data-mf-modal-acceder class="mf-btn-primary">Acceder</button>
         </div>
       </div>
     </div>

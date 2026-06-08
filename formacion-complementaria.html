@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-prototype-only" content="true">
   <title>Formación complementaria — Mi Formación</title>
-  <link href="layout-shell.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={theme:{extend:{colors:{background:'#fff',foreground:'#0a0a0a',muted:'#f4f4f5','muted-foreground':'#71717a',accent:'#f4f4f5',border:'#e4e4e7',sidebar:'#fafafa','sidebar-foreground':'#0a0a0a','sidebar-accent':'#f4f4f5','sidebar-border':'#e4e4e7'},fontFamily:{sans:['var(--brand-font-body)','ui-sans-serif','system-ui','sans-serif']}}}};</script>
@@ -111,12 +110,12 @@
             <option value="reprobado">Reprobado</option>
           </select>
         </div>
-        <button type="button" data-mf-course-filter-clear class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50">Limpiar filtros</button>
+        <button type="button" data-mf-course-filter-clear class="mf-btn-secondary">Limpiar filtros</button>
       </div>
     </div>
     <div data-mf-course-filter-empty class="hidden text-center py-12 border border-dashed border-gray-300 rounded-lg bg-white mb-4">
       <h3 class="text-base font-medium text-gray-900">No se encontraron cursos</h3>
-      <p class="text-sm text-gray-500 mt-2">Prueba con otro título, categoría o estado, o <button type="button" data-mf-course-filter-clear class="text-gray-900 font-medium underline">limpiar filtros</button>.</p>
+      <p class="text-sm text-gray-500 mt-2">Prueba con otro título, categoría o estado, o <button type="button" data-mf-course-filter-clear class="mf-btn-link">limpiar filtros</button>.</p>
     </div>
     <div data-testid="course-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><article data-mf-course="COM-1" class="rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">
   <div class="aspect-video bg-gray-200 relative">
@@ -134,8 +133,8 @@
     <h3 class="font-medium text-gray-900">Comunicación efectiva</h3>
     <p class="text-sm text-gray-500 mt-1">1 h</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-1" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-1" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article>
@@ -155,8 +154,8 @@
     <h3 class="font-medium text-gray-900">Trabajo en equipo</h3>
     <p class="text-sm text-gray-500 mt-1">1 h</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-2" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-2" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article>
@@ -176,8 +175,8 @@
     <h3 class="font-medium text-gray-900">Excel intermedio</h3>
     <p class="text-sm text-gray-500 mt-1">2 h</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-3" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-3" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article>
@@ -197,8 +196,8 @@
     <h3 class="font-medium text-gray-900">Inglés técnico</h3>
     <p class="text-sm text-gray-500 mt-1">2 h</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-4" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-4" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article>
@@ -218,8 +217,8 @@
     <h3 class="font-medium text-gray-900">Gestión del tiempo</h3>
     <p class="text-sm text-gray-500 mt-1">1 h</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-5" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-5" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article>
@@ -239,8 +238,8 @@
     <h3 class="font-medium text-gray-900">Balance vida-trabajo</h3>
     <p class="text-sm text-gray-500 mt-1">45 min</p>
     <div class="mt-auto pt-4 flex gap-2">
-      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-6" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>
-      <button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>
+      <button type="button" data-mf-ver-mas data-mf-modal-course="COM-6" class="mf-btn-secondary flex-1 w-full">Ver más</button>
+      <button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>
     </div>
   </div>
 </article></div>
@@ -257,8 +256,8 @@
       <div class="flex flex-wrap items-center gap-3">
         <span data-mf-course-page-info class="text-sm text-gray-600">Página 1 de 1</span>
         <nav aria-label="Paginación de cursos" class="flex items-center gap-1">
-          <button type="button" data-mf-course-page-prev class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none" disabled>Anterior</button>
-          <button type="button" data-mf-course-page-next class="px-3 py-1 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none">Siguiente</button>
+          <button type="button" data-mf-course-page-prev class="mf-btn-secondary mf-btn-pagination" disabled>Anterior</button>
+          <button type="button" data-mf-course-page-next class="mf-btn-secondary mf-btn-pagination">Siguiente</button>
         </nav>
       </div>
     </div>
@@ -287,8 +286,8 @@
       <p data-mf-modal-desc class="mt-3 text-sm text-gray-600"></p>
       <p data-mf-modal-prereqs class="hidden mt-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-md p-2"></p>
       <div class="mt-6 flex gap-2 justify-end">
-        <button type="button" data-mf-modal-close class="rounded-md border border-gray-300 px-4 py-2 text-sm">Cerrar</button>
-        <button type="button" data-mf-modal-acceder class="rounded-md mf-btn-primary px-4 py-2 text-sm text-white">Acceder</button>
+        <button type="button" data-mf-modal-close class="mf-btn-secondary">Cerrar</button>
+        <button type="button" data-mf-modal-acceder class="mf-btn-primary">Acceder</button>
       </div>
     </div>
   </div>

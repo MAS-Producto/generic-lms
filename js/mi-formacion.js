@@ -11,10 +11,20 @@
   var RECENT_MAX = 8;
   var DEMO_USER = 'María González';
 
+  /** Logged-in demo user org profile (Mi perfil summary; sim-bar drives avance). */
+  var CURRENT_USER = {
+    nombre: DEMO_USER,
+    rut: '10.234.567-8',
+    cargo: 'Jefa de capacitación y desarrollo',
+    gerencia: 'Gerencia Corporativa',
+    area: 'RR.HH.',
+    familiaCargo: 'Administración y soporte'
+  };
+
   /** Sim-bar driven recents on Inicio (prototype); not tied to mf-recent-courses storage */
   var RECENT_BY_LEVEL = {
     '0': [],
-    '45': ['IND-4', 'NOR-3', 'MLL-4', 'COM-2'],
+    '45': ['IND-4', 'NOR-3', 'MLL-4', 'COM-3'],
     '100': ['IND-6', 'NOR-8', 'MLL-9', 'COM-6']
   };
 
@@ -78,8 +88,8 @@
     '0': [],
     '45': [
       'IND-1', 'IND-2', 'IND-3', 'IND-4',
-      'NOR-1', 'NOR-2', 'NOR-3',
-      'COM-1', 'COM-2',
+      'NOR-1', 'NOR-2', 'NOR-3', 'NOR-4',
+      'COM-1',
       'MLL-1', 'MLL-2', 'MLL-3', 'MLL-4'
     ],
     '100': Object.keys(COURSES)
@@ -87,7 +97,7 @@
 
   var EN_PROCESO_BY_LEVEL = {
     '0': ['IND-1', 'NOR-1', 'COM-1'],
-    '45': ['IND-5', 'NOR-4', 'NOR-5', 'COM-3'],
+    '45': ['IND-5', 'NOR-5', 'COM-3'],
     '100': []
   };
 
@@ -96,6 +106,53 @@
     '45': ['NOR-6', 'COM-4'],
     '100': []
   };
+
+  /** Keep sim fixtures disjoint: Aprobado > Reprobado > En proceso (prototype-wide source of truth). */
+  function sanitizeProgressFixtures() {
+    ['0', '45', '100'].forEach(function (level) {
+      var approved = new Set(APPROVED_BY_LEVEL[level] || []);
+      var reprobado = (REPROBADO_BY_LEVEL[level] || []).filter(function (id) {
+        return !approved.has(id);
+      });
+      var reproSet = new Set(reprobado);
+      var enProceso = (EN_PROCESO_BY_LEVEL[level] || []).filter(function (id) {
+        return !approved.has(id) && !reproSet.has(id);
+      });
+      REPROBADO_BY_LEVEL[level] = reprobado;
+      EN_PROCESO_BY_LEVEL[level] = enProceso;
+    });
+    stripEngagedFromLockedSlots();
+  }
+
+  /** Drop en-proceso/reprobado on cursos that would still be locked as Sin actividad (per sim level). */
+  function stripEngagedFromLockedSlots() {
+    ['0', '45', '100'].forEach(function (level) {
+      var approved = new Set(APPROVED_BY_LEVEL[level] || []);
+      function wouldBeLocked(id) {
+        var c = COURSES[id];
+        if (!c || c.noLock || approved.has(id)) return false;
+        if (c.grupo === 'malla' && !wouldMallaTabUnlockAtLevel(c.tab, level, approved)) return true;
+        if (!c.prereqs || !c.prereqs.length) return false;
+        return c.prereqs.some(function (p) { return !approved.has(p); });
+      }
+      EN_PROCESO_BY_LEVEL[level] = (EN_PROCESO_BY_LEVEL[level] || []).filter(function (id) {
+        return !wouldBeLocked(id);
+      });
+      REPROBADO_BY_LEVEL[level] = (REPROBADO_BY_LEVEL[level] || []).filter(function (id) {
+        return !wouldBeLocked(id) && !approved.has(id);
+      });
+    });
+  }
+
+  function wouldMallaTabUnlockAtLevel(tab, level, approvedSet) {
+    if (tab === 'fundamentos') return true;
+    var upstream = MALLA_TAB_UPSTREAM[tab];
+    if (!upstream) return true;
+    var ids = coursesInMallaTab(upstream);
+    return ids.length > 0 && ids.every(function (id) { return approvedSet.has(id); });
+  }
+
+  sanitizeProgressFixtures();
 
   var ESTADO_LABELS = {
     'sin-actividad': 'Sin actividad',
@@ -214,10 +271,17 @@
     });
   }
 
+  /** User already started or finished — must not show prerequisite/tab lock on the card. */
+  function isCourseEngaged(id) {
+    var estado = getCourseEstadoKey(id);
+    return estado === 'aprobado' || estado === 'en-proceso' || estado === 'reprobado';
+  }
+
   function isCourseLocked(id) {
     var c = COURSES[id];
     if (!c) return false;
     if (c.noLock) return false;
+    if (isCourseEngaged(id)) return false;
     if (c.grupo === 'malla' && !isMallaTabUnlocked(c.tab)) return true;
     if (!c.prereqs || !c.prereqs.length) return false;
     return c.prereqs.some(function (p) { return !isApproved(p); });
@@ -352,8 +416,8 @@
       '<h3 class="font-medium text-gray-900 line-clamp-2 leading-snug">' + c.title + '</h3>' +
       '<p class="text-sm text-gray-500 mt-1">' + c.duration + '</p>' +
       '<div class="mt-auto pt-4 flex gap-2">' +
-      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">Ver más</button>' +
-      '<button type="button" data-mf-acceder class="flex-1 rounded-md mf-btn-primary px-3 py-2 text-sm font-medium text-white">Acceder</button>' +
+      '<button type="button" data-mf-ver-mas data-mf-modal-course="' + id + '" class="mf-btn-secondary flex-1 w-full">Ver más</button>' +
+      '<button type="button" data-mf-acceder class="mf-btn-primary flex-1 w-full">Acceder</button>' +
       '</div></div></article>';
   }
 
@@ -727,10 +791,11 @@
     updateMallaTabs();
     updateNotifications();
     updateInsignias();
+    renderPerfilProfile();
+    renderHistorialTable();
     updateRecentCarousel();
     applyGrupoCourseFilters(true);
     applyEquipoFilters(true);
-    applyHistorialFilters(true);
   }
 
   /* ── Modals ──────────────────────────────────────────────────────────── */
@@ -1015,15 +1080,44 @@
       '<span data-mf-equipo-avance-pct class="text-xs font-medium text-gray-700 tabular-nums w-10 text-right shrink-0">' + pct + '%</span></div>';
   }
 
-  function memberAvanceDoughnutHtml(pct) {
+  function profileAvanceDoughnutHtml(pct) {
     var offset = MEMBER_PROGRESS_RING_CIRCUMFERENCE * (1 - pct / 100);
     return '<div class="relative w-[4.5rem] h-[4.5rem]" role="img" aria-label="Avance general ' + pct + '%">' +
       '<svg class="w-full h-full -rotate-90" viewBox="0 0 100 100" focusable="false" aria-hidden="true">' +
       '<circle cx="50" cy="50" r="' + MEMBER_PROGRESS_RING_R + '" fill="none" stroke="#e4e4e7" stroke-width="8"></circle>' +
-      '<circle data-mf-equipo-modal-progress-ring cx="50" cy="50" r="' + MEMBER_PROGRESS_RING_R + '" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + MEMBER_PROGRESS_RING_CIRCUMFERENCE.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '"></circle>' +
+      '<circle data-mf-profile-progress-ring cx="50" cy="50" r="' + MEMBER_PROGRESS_RING_R + '" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + MEMBER_PROGRESS_RING_CIRCUMFERENCE.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '"></circle>' +
       '</svg>' +
       '<span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-900 tabular-nums">' + pct + '%</span>' +
       '</div>';
+  }
+
+  function renderProfileSummary(container, profile, pct) {
+    if (!container || !profile) return;
+    var avatar = qs('[data-mf-profile-avatar]', container);
+    var nameEl = qs('[data-mf-profile-name]', container);
+    var rutEl = qs('[data-mf-profile-rut]', container);
+    var cargoEl = qs('[data-mf-profile-cargo]', container);
+    var orgEl = qs('[data-mf-profile-org]', container);
+    var avanceEl = qs('[data-mf-profile-avance]', container);
+    if (avatar) {
+      avatar.src = memberAvatarUrl(profile);
+      avatar.alt = 'Foto de ' + profile.nombre;
+    }
+    if (nameEl) setText(nameEl, profile.nombre);
+    if (rutEl) setText(rutEl, profile.rut);
+    if (cargoEl) setText(cargoEl, profile.cargo);
+    if (orgEl) {
+      setText(orgEl, profile.gerencia + ' · ' + profile.area + ' · ' + profile.familiaCargo);
+    }
+    if (avanceEl) {
+      avanceEl.innerHTML = profileAvanceDoughnutHtml(pct);
+    }
+  }
+
+  function renderPerfilProfile() {
+    var container = qs('[data-mf-perfil-profile]');
+    if (!container) return;
+    renderProfileSummary(container, CURRENT_USER, progressPercent());
   }
 
   function renderEquipoTable() {
@@ -1040,7 +1134,7 @@
         '<td class="px-4 py-3 text-left text-gray-600">' + m.cargo + '</td>' +
         '<td class="px-4 py-3 text-left text-gray-600">' + m.familiaCargo + '</td>' +
         '<td class="px-4 py-3 text-left">' + memberAvanceBarHtml(pct) + '</td>' +
-        '<td class="px-4 py-3 text-left"><button type="button" data-mf-equipo-ver class="rounded-md mf-btn-primary px-3 py-1.5 text-sm font-medium text-white whitespace-nowrap">Ver cursos</button></td>' +
+        '<td class="px-4 py-3 text-left"><button type="button" data-mf-equipo-ver class="mf-btn-table">Ver cursos</button></td>' +
         '</tr>';
     }).join('');
     reorderEquipoTableRows();
@@ -1294,13 +1388,99 @@
 
   var historialPagination = { page: 1, pageSize: 6 };
 
+  var HISTORIAL_GRUPO_ORDER = ['induccion', 'normativos', 'complementaria', 'malla'];
+
+  /** Demo completion dates when curso is Aprobado (aligned with grupo card estado via sim-bar). */
+  var HISTORIAL_FECHA_BY_ID = {
+    'IND-1': '12/01/2025', 'IND-2': '14/01/2025', 'IND-3': '15/01/2025', 'IND-4': '17/01/2025',
+    'IND-5': '20/01/2025', 'IND-6': '22/01/2025',
+    'NOR-1': '18/01/2025', 'NOR-2': '19/01/2025', 'NOR-3': '20/01/2025', 'NOR-4': '24/01/2025',
+    'NOR-5': '27/01/2025', 'NOR-6': '28/01/2025', 'NOR-7': '30/01/2025', 'NOR-8': '31/01/2025',
+    'COM-1': '22/01/2025', 'COM-2': '23/01/2025', 'COM-3': '25/01/2025', 'COM-4': '26/01/2025',
+    'COM-5': '29/01/2025', 'COM-6': '30/01/2025',
+    'MLL-1': '05/02/2025', 'MLL-2': '06/02/2025', 'MLL-3': '07/02/2025', 'MLL-4': '10/02/2025',
+    'MLL-5': '12/02/2025', 'MLL-6': '14/02/2025', 'MLL-7': '17/02/2025', 'MLL-8': '19/02/2025',
+    'MLL-9': '21/02/2025'
+  };
+
+  function allMandatoryCourseIds() {
+    var ids = [];
+    HISTORIAL_GRUPO_ORDER.forEach(function (grupoKey) {
+      ids = ids.concat(
+        coursesInGrupo(grupoKey).slice().sort(function (a, b) {
+          return a.localeCompare(b, 'es', { numeric: true });
+        })
+      );
+    });
+    return ids;
+  }
+
+  function isHistorialFinalized(id) {
+    var key = getCourseEstadoKey(id);
+    return key === 'aprobado' || key === 'reprobado';
+  }
+
+  /** Mi historial: only courses with a final outcome (not Sin actividad / En proceso). */
+  function historialCourseIds() {
+    return allMandatoryCourseIds().filter(isHistorialFinalized);
+  }
+
+  function historialFechaDisplay(id) {
+    if (!isHistorialFinalized(id)) return '—';
+    return HISTORIAL_FECHA_BY_ID[id] || '—';
+  }
+
+  function historialCertificadoCell(id) {
+    var c = COURSES[id];
+    if (!c || !isApproved(id)) {
+      return '<span class="text-sm text-gray-400">—</span>';
+    }
+    return '<button type="button" data-mf-historial-certificado class="mf-btn-table" aria-label="Descargar certificado de ' +
+      c.title.replace(/"/g, '&quot;') + '">Descargar</button>';
+  }
+
+  function buildHistorialRow(id) {
+    var c = COURSES[id];
+    if (!c) return '';
+    var grupo = grupoLabelForCourse(id);
+    var estadoKey = getCourseEstadoKey(id);
+    return '<tr data-mf-historial-row data-mf-historial-id="' + id + '" data-mf-historial-curso="' + c.title + '" data-mf-historial-grupo="' + grupo + '" data-mf-historial-estado="' + estadoKey + '">' +
+      '<td class="px-4 py-3 text-left text-gray-600 whitespace-nowrap tabular-nums font-medium">' + id + '</td>' +
+      '<td class="px-4 py-3 text-left font-medium text-gray-900">' + c.title + '</td>' +
+      '<td class="px-4 py-3 text-left text-gray-600">' + grupo + '</td>' +
+      '<td class="px-4 py-3 text-left"><span class="' + statusChipClass(id) + '">' + statusLabel(id) + '</span></td>' +
+      '<td class="px-4 py-3 text-left text-gray-500 whitespace-nowrap">' + historialFechaDisplay(id) + '</td>' +
+      '<td class="px-4 py-3 text-left">' + historialCertificadoCell(id) + '</td>' +
+      '</tr>';
+  }
+
+  function renderHistorialTable() {
+    var tbody = qs('[data-mf-historial-tbody]');
+    if (!tbody) return;
+    tbody.innerHTML = historialCourseIds().map(buildHistorialRow).join('');
+    populateHistorialCategoryFilter();
+    applyHistorialFilters(true);
+  }
+
+  function showPrototypeToast(message) {
+    var existing = document.getElementById('mfPrototypeToast');
+    if (existing) existing.remove();
+    var el = document.createElement('div');
+    el.id = 'mfPrototypeToast';
+    el.setAttribute('role', 'status');
+    el.className = 'fixed bottom-14 left-1/2 -translate-x-1/2 z-[70] max-w-sm rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-lg';
+    el.textContent = message;
+    document.body.appendChild(el);
+    window.setTimeout(function () { el.remove(); }, 3200);
+  }
+
   function populateHistorialCategoryFilter() {
     var select = qs('[data-mf-historial-filter-categoria]');
     if (!select) return;
     var seen = {};
     var categories = [];
     qsa('[data-mf-historial-row]').forEach(function (row) {
-      var cat = row.getAttribute('data-mf-historial-categoria') || '';
+      var cat = row.getAttribute('data-mf-historial-grupo') || '';
       if (cat && !seen[cat]) {
         seen[cat] = true;
         categories.push(cat);
@@ -1319,9 +1499,9 @@
   }
 
   function historialRowMatchesFilters(row) {
+    var id = (row.getAttribute('data-mf-historial-id') || '').toLowerCase();
     var curso = (row.getAttribute('data-mf-historial-curso') || '').toLowerCase();
-    var grupo = (row.getAttribute('data-mf-historial-grupo') || '').toLowerCase();
-    var categoria = row.getAttribute('data-mf-historial-categoria') || '';
+    var grupo = row.getAttribute('data-mf-historial-grupo') || '';
     var estado = row.getAttribute('data-mf-historial-estado') || '';
     var searchEl = qs('[data-mf-historial-search]');
     var catEl = qs('[data-mf-historial-filter-categoria]');
@@ -1330,8 +1510,8 @@
     var catFilter = catEl ? catEl.value : '';
     var estadoFilter = estadoEl ? estadoEl.value : '';
 
-    if (query && curso.indexOf(query) === -1 && grupo.indexOf(query) === -1) return false;
-    if (catFilter && categoria !== catFilter) return false;
+    if (query && id.indexOf(query) === -1 && curso.indexOf(query) === -1) return false;
+    if (catFilter && grupo !== catFilter) return false;
     if (estadoFilter && estado !== estadoFilter) return false;
     return true;
   }
@@ -1356,6 +1536,13 @@
     var rows = qsa('[data-mf-historial-row]');
     var tableWrap = qs('[data-mf-historial-table-wrap]');
     var filterEmpty = qs('[data-mf-historial-filter-empty]');
+    var catalogEmpty = qs('[data-mf-historial-catalog-empty]');
+    var paginator = qs('[data-mf-historial-pagination]');
+    var catalogEmptyState = rows.length === 0;
+
+    if (toolbar) toolbar.classList.toggle('hidden', catalogEmptyState);
+    if (catalogEmpty) catalogEmpty.classList.toggle('hidden', !catalogEmptyState);
+    if (paginator) paginator.classList.toggle('hidden', catalogEmptyState);
 
     if (resetPage) historialPagination.page = 1;
 
@@ -1387,16 +1574,14 @@
       (estadoEl && estadoEl.value);
     var showFilterEmpty = matched.length === 0 && hasSearchFilters;
 
-    if (tableWrap) tableWrap.classList.toggle('hidden', matched.length === 0);
-    if (filterEmpty) filterEmpty.classList.toggle('hidden', !showFilterEmpty);
+    if (tableWrap) tableWrap.classList.toggle('hidden', catalogEmptyState || matched.length === 0);
+    if (filterEmpty) filterEmpty.classList.toggle('hidden', catalogEmptyState || !showFilterEmpty);
     updateHistorialPaginationUI(matched.length, totalPages);
   }
 
   function bindHistorialFilters() {
     var toolbar = qs('[data-mf-historial-filters]');
     if (!toolbar) return;
-
-    populateHistorialCategoryFilter();
 
     function onFilterChange() {
       applyHistorialFilters(true);
@@ -1440,8 +1625,6 @@
         applyHistorialFilters(true);
       });
     });
-
-    applyHistorialFilters(true);
   }
 
   function resourceInBibliotecaTab(card, tabFilter) {
@@ -1713,29 +1896,13 @@
   function renderEquipoModalProfile(member) {
     var modal = document.getElementById('equipoModal');
     if (!modal) return;
-    var avatar = qs('[data-mf-equipo-modal-avatar]', modal);
-    var nameEl = qs('[data-mf-equipo-modal-name]', modal);
-    var rutEl = qs('[data-mf-equipo-modal-rut]', modal);
-    var cargoEl = qs('[data-mf-equipo-modal-cargo]', modal);
-    var orgEl = qs('[data-mf-equipo-modal-org]', modal);
-    var avanceEl = qs('[data-mf-equipo-modal-avance]', modal);
+    var container = qs('[data-mf-equipo-modal-profile]', modal);
     if (!member) {
+      var nameEl = container && qs('[data-mf-profile-name]', container);
       if (nameEl) setText(nameEl, 'Colaborador');
       return;
     }
-    if (avatar) {
-      avatar.src = memberAvatarUrl(member);
-      avatar.alt = 'Foto de ' + member.nombre;
-    }
-    if (nameEl) setText(nameEl, member.nombre);
-    if (rutEl) setText(rutEl, member.rut);
-    if (cargoEl) setText(cargoEl, member.cargo);
-    if (orgEl) {
-      setText(orgEl, member.gerencia + ' · ' + member.area + ' · ' + member.familiaCargo);
-    }
-    if (avanceEl) {
-      avanceEl.innerHTML = memberAvanceDoughnutHtml(memberProgressPercent(member));
-    }
+    renderProfileSummary(container, member, memberProgressPercent(member));
   }
 
   function buildEquipoModalCourseRow(member, id) {
@@ -2087,6 +2254,19 @@
         var row = e.target.closest('[data-mf-equipo-row]');
         var memberId = row ? row.getAttribute('data-mf-member-id') : '';
         openEquipoModal(memberId);
+      }
+      var histCert = e.target.closest('[data-mf-historial-certificado]');
+      if (histCert) {
+        e.preventDefault();
+        var histRow = histCert.closest('[data-mf-historial-row]');
+        var histId = histRow ? histRow.getAttribute('data-mf-historial-id') : '';
+        var histCurso = histRow ? histRow.getAttribute('data-mf-historial-curso') : '';
+        showPrototypeToast(
+          'Descarga de certificado iniciada' +
+            (histId ? ' (' + histId + ')' : '') +
+            (histCurso ? ': ' + histCurso + '.' : '.') +
+            ' En producción: archivo desde el LMS.'
+        );
       }
     });
 

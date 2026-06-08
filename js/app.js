@@ -41,33 +41,37 @@ function toggleTopNav() {
 function toggleUserMenu() {
   var d = document.getElementById('userMenuDropdown');
   var btn = document.getElementById('userMenuBtn');
+  var chev = document.getElementById('userMenuChevron');
   if (!d) return;
   var open = !d.classList.contains('hidden');
   d.classList.toggle('hidden', open);
   if (btn) btn.setAttribute('aria-expanded', String(!open));
+  if (chev) chev.classList.toggle('rotate-180', !open);
 }
 document.addEventListener('click', function (e) {
   var w = document.getElementById('userMenuWrapper');
   var d = document.getElementById('userMenuDropdown');
   var btn = document.getElementById('userMenuBtn');
+  var chev = document.getElementById('userMenuChevron');
   if (w && !w.contains(e.target) && d) {
     d.classList.add('hidden');
     if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (chev) chev.classList.remove('rotate-180');
   }
 });
 
-/* ── Desktop sidebar collapse (layout-sidebar rail) ───────────────────────── */
+/* ── Desktop sidebar collapse ─────────────────────────────────────────────── */
 (function () {
-  var RAIL_STORAGE_KEY = 'prototype-rail-sidebar-expanded';
   var btn = document.getElementById('railSidebarToggle');
   var shell = document.getElementById('appRailShell');
   var aside = document.getElementById('railAside');
+  var logoBlock = document.getElementById('railLogoBlock');
   if (!btn || !aside) return;
 
-  var labelIds = [
-    'railCapInicio', 'railCapInduccion', 'railCapNormativos', 'railCapComplementaria',
-    'railCapMallas', 'railCapBiblioteca', 'railCapPerfil', 'railCapEquipo'
-  ];
+  var labelIds = ['railCapDash', 'railCapProj', 'railCapSet'];
+  var icons = aside.querySelectorAll('[data-rail-icon]');
+  var navLinks = aside.querySelectorAll('[data-rail-nav]');
+  var nav = aside.querySelector('nav');
   var expanded = true;
 
   function setExpanded(isExpanded) {
@@ -75,32 +79,50 @@ document.addEventListener('click', function (e) {
     if (shell) {
       if (isExpanded) shell.style.removeProperty('--rail-sidebar-width');
       else shell.style.setProperty('--rail-sidebar-width', '4rem');
-      shell.classList.toggle('app-rail-shell--collapsed', !isExpanded);
     }
     labelIds.forEach(function (id) {
       var el = document.getElementById(id);
-      if (el) el.classList.toggle('hidden', !isExpanded);
+      if (!el) return;
+      el.classList.toggle('hidden', !isExpanded);
     });
+    icons.forEach(function (el) {
+      var icon = el.querySelector('.app-icon, .heroicon, svg');
+      if (icon) {
+        icon.classList.toggle('app-icon-lg', !isExpanded);
+        icon.classList.toggle('w-6', !isExpanded);
+        icon.classList.toggle('h-6', !isExpanded);
+        icon.classList.toggle('w-5', isExpanded);
+        icon.classList.toggle('h-5', isExpanded);
+      }
+    });
+    navLinks.forEach(function (el) {
+      el.classList.toggle('justify-start', isExpanded);
+      el.classList.toggle('justify-center', !isExpanded);
+      el.classList.toggle('px-2', isExpanded);
+      el.classList.toggle('px-1', !isExpanded);
+    });
+    if (nav) {
+      nav.classList.toggle('items-center', !isExpanded);
+      nav.classList.toggle('p-3', isExpanded);
+      nav.classList.toggle('px-1', !isExpanded);
+      nav.classList.toggle('py-2', !isExpanded);
+    }
+    if (logoBlock) {
+      logoBlock.classList.toggle('px-4', isExpanded);
+      logoBlock.classList.toggle('px-1', !isExpanded);
+    }
     var chL = document.getElementById('railChevLeft');
     var chR = document.getElementById('railChevRight');
     if (chL) chL.classList.toggle('hidden', !isExpanded);
     if (chR) chR.classList.toggle('hidden', isExpanded);
     btn.setAttribute('aria-expanded', String(isExpanded));
-    btn.setAttribute('aria-label', isExpanded ? 'Contraer menú' : 'Expandir menú');
-    try {
-      sessionStorage.setItem(RAIL_STORAGE_KEY, isExpanded ? '1' : '0');
-    } catch (e) { /* ignore quota / private mode */ }
   }
 
   btn.addEventListener('click', function () {
     setExpanded(!expanded);
   });
 
-  var stored = null;
-  try {
-    stored = sessionStorage.getItem(RAIL_STORAGE_KEY);
-  } catch (e) { /* ignore */ }
-  setExpanded(stored !== '0');
+  setExpanded(true);
 })();
 
 /* ── Vanilla JS feature stubs ─────────────────────────────────────────────
