@@ -18,6 +18,6 @@ This file is **`ARCHIVE.md`** (not `README.md`) so it is not affected by root `.
 
 | Version | PRD ID | Frozen on | Summary | Path |
 | :---- | :---- | :---- | :---- | :---- |
-| *(none yet)* | | | | |
+| 1 | `0a8d4c6e-c949-49d8-88de-71f0dde4be0c` | 2026-06-08 | Mi formación prototype complete (§10, Mis favoritos, masconsultores) | `releases/v1/` |
 
 *The Agent appends a row on each release.*

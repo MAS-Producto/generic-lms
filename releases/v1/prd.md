@@ -7,7 +7,7 @@
 | Field | Value |
 |--------|--------|
 | **PRD ID** | `0a8d4c6e-c949-49d8-88de-71f0dde4be0c` |
-| **Version** | 2 |
+| **Version** | 1 |
 | **Date** | 2025-06-03 |
 | **Author** | Daniela Garcia |
 | **Workflow status** | `implemented` |
@@ -18,7 +18,7 @@
 | **Client brand** | `masconsultores` (demo; swap via Metadata + `prototype-assembler` for each client) |
 | **Primary HTML entry** | `index.html` → redirects to `inicio.html` |
 | **UI plan approved** | [x] Date: 2025-06-03 By: Daniela Garcia |
-| **Last frozen at** | `releases/v1/` |
+| **Last frozen at** | — |
 
 **Design system registry** *(filled at Gate 2; update when a new component role is introduced)*
 
@@ -662,7 +662,6 @@ Fundamentos ──► Desarrollo ──► Liderazgo
 | 1 | 2026-06-08 | **Mis favoritos:** bookmark toggle on course cards + Ver más modal; sidebar page `mis-favoritos.html` with filter/pagination grid; `mf-bookmarks` localStorage (§4.9, §5 R12, §6, §7.6.1, §9, §10) |
 | 1 | 2026-06-08 | Copy: label **Mis guardados** → **Mis favoritos**; screen `mis-guardados.html` → `mis-favoritos.html` (§4.9, §7.6.1, §10) |
 | 1 | 2026-06-08 | Copy: sentence case for sidebar labels and page titles — **Cursos normativos**, **Mi equipo**, **Mi formación** (§7.2, §10; all §10 screens + `mi-formacion.js` GRUPOS labels) |
-| 2 | 2026-06-08 | Released v1 to `releases/v1/`; started v2 at root (HTML updated: —) |
 
 ---
 
