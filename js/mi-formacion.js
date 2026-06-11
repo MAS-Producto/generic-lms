@@ -1740,6 +1740,7 @@
       area: 'Operaciones',
       cargo: 'Analista de procesos',
       familiaCargo: 'Operaciones y logística',
+      ultimaConexion: '10/06/2026, 09:15',
       approved: ['IND-1', 'IND-2', 'IND-3', 'IND-4', 'NOR-1', 'NOR-2', 'COM-1', 'MLL-1', 'MLL-2'],
       enProceso: ['IND-5', 'NOR-3', 'MLL-3'],
       reprobado: ['NOR-4']
@@ -1752,6 +1753,7 @@
       area: 'Comercial',
       cargo: 'Ejecutiva de ventas',
       familiaCargo: 'Comercial y marketing',
+      ultimaConexion: '09/06/2026, 16:42',
       approved: ['IND-1', 'IND-2', 'IND-3', 'IND-4', 'IND-5', 'IND-6', 'NOR-1', 'NOR-2', 'NOR-3', 'NOR-4', 'NOR-5', 'COM-1', 'COM-2', 'COM-3', 'MLL-1', 'MLL-2', 'MLL-3', 'MLL-4', 'MLL-5'],
       enProceso: ['NOR-6', 'MLL-6']
     },
@@ -1763,6 +1765,7 @@
       area: 'Operaciones',
       cargo: 'Supervisor de planta',
       familiaCargo: 'Operaciones y logística',
+      ultimaConexion: '05/06/2026, 11:08',
       approved: ['IND-1', 'IND-2', 'NOR-1', 'MLL-1'],
       enProceso: ['IND-3', 'NOR-2'],
       reprobado: ['IND-4']
@@ -1775,6 +1778,7 @@
       area: 'RR.HH.',
       cargo: 'Analista de recursos humanos',
       familiaCargo: 'Administración y soporte',
+      ultimaConexion: '11/06/2026, 08:03',
       approved: ['IND-1', 'IND-2', 'IND-3', 'IND-4', 'IND-5', 'NOR-1', 'NOR-2', 'NOR-3', 'NOR-4', 'COM-1', 'COM-2', 'MLL-1', 'MLL-2', 'MLL-3', 'MLL-4'],
       enProceso: ['NOR-5', 'MLL-5']
     },
@@ -1786,6 +1790,7 @@
       area: 'TI',
       cargo: 'Desarrollador de software',
       familiaCargo: 'Tecnología e innovación',
+      ultimaConexion: '02/06/2026, 19:27',
       approved: ['IND-1', 'IND-2', 'IND-3', 'NOR-1', 'NOR-2', 'NOR-3', 'COM-1', 'COM-2', 'MLL-1', 'MLL-2', 'MLL-3'],
       enProceso: ['IND-4', 'MLL-4'],
       reprobado: ['NOR-4']
@@ -1798,6 +1803,7 @@
       area: 'Comercial',
       cargo: 'Jefa de equipo comercial',
       familiaCargo: 'Comercial y marketing',
+      ultimaConexion: '08/06/2026, 13:51',
       approved: Object.keys(COURSES)
     }
   ];
@@ -1834,6 +1840,10 @@
     if (cargoEl) setText(cargoEl, profile.cargo);
     if (orgEl) {
       setText(orgEl, profile.gerencia + ' · ' + profile.area + ' · ' + profile.familiaCargo);
+    }
+    var ultimaEl = qs('[data-mf-profile-ultima-conexion]', container);
+    if (ultimaEl) {
+      setText(ultimaEl, profile.ultimaConexion ? 'Última conexión: ' + profile.ultimaConexion : '');
     }
   }
 

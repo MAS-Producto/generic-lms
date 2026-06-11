@@ -209,7 +209,7 @@
 - **Avance general** per row = share of all mandatory cursos assigned to that user (**Aprobado** / 34 in demo) — same calculation as **Inicio** overall progress for that user (not the supervisor’s sim-bar state).
 - Row action **Ver cursos** as secondary table button (`.mf-btn-table`; not text link).
 - **Pagination** on filtered rows: page size **6 / 12 / 24** (default **6**), **Anterior** / **Siguiente**, *Página N de M*.
-- **Ver cursos** modal: **profile box** (same layout as Mi perfil summary — avatar placeholder with initials; nombre, RUT/DNI, cargo, gerencia/área/familia; **Finalizados** / **Aprobados** / **Reprobados** from per-member fixture; **Avance general** large **%**) + **filter box** (**Buscar** by ID or curso · **Categoría** = grupo/malla: Inducción / Cursos normativos / Formación complementaria / Programa de Liderazgo / Gestión de proyectos · **Estado** · **Limpiar filtros**) + **sortable table** (columns **ID**, **Curso**, **Categoría**, **Estado**; same table/sort/pagination pattern as main Mi equipo table; per-member fixture, independent of supervisor sim-bar).
+- **Ver cursos** modal: **profile box** (same layout as Mi perfil summary — avatar placeholder with initials; nombre, RUT/DNI, cargo, gerencia/área/familia; **Última conexión** from Moodle `lastaccess` per member; **Finalizados** / **Aprobados** / **Reprobados** from per-member fixture; **Avance general** large **%**) + **filter box** (**Buscar** by ID or curso · **Categoría** = grupo/malla: Inducción / Cursos normativos / Formación complementaria / Programa de Liderazgo / Gestión de proyectos · **Estado** · **Limpiar filtros**) + **sortable table** (columns **ID**, **Curso**, **Categoría**, **Estado**; same table/sort/pagination pattern as main Mi equipo table; per-member fixture, independent of supervisor sim-bar).
 
 ### 4.9 Mis favoritos (`mis-favoritos.html`)
 
@@ -454,9 +454,10 @@ Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
 | Filter empty (heading) | *No se encontraron colaboradores* |
 | Filter empty (helper) | *Prueba con otros criterios de búsqueda o filtros, o **limpiar filtros**.* |
 | Row action | **Ver cursos** (`.mf-btn-table` secondary in **Acciones** column) |
+| Modal profile — **Última conexión** | Label **Última conexión:** + datetime (`dd/mm/yyyy, HH:mm`); demo per member in `EQUIPO_MEMBERS.ultimaConexion`; production from Moodle user `lastaccess` |
 | Pagination | **Mostrar** (6 / 12 / 24 por página) · *Página N de M* · **Anterior** · **Siguiente** |
 
-**Modal (Ver cursos):** profile box (same as Mi perfil summary — avatar + org fields + **Finalizados** / **Aprobados** / **Reprobados** + **Avance general** %) · filter toolbar (**Buscar** *ID o nombre del curso…* · **Categoría** · **Estado** · **Limpiar filtros**) · sortable table **ID** · **Curso** · **Categoría** (grupo) · **Estado** (chips: Aprobado / En proceso / Pendiente / Reprobado) · pagination (6/12/24). Per-member `EQUIPO_MEMBERS` fixture; independent of supervisor sim-bar.
+**Modal (Ver cursos):** profile box (same as Mi perfil summary — avatar + org fields + **Última conexión** · **Finalizados** / **Aprobados** / **Reprobados** + **Avance general** %) · filter toolbar (**Buscar** *ID o nombre del curso…* · **Categoría** · **Estado** · **Limpiar filtros**) · sortable table **ID** · **Curso** · **Categoría** (grupo) · **Estado** (chips: Aprobado / En proceso / Pendiente / Reprobado) · pagination (6/12/24). Per-member `EQUIPO_MEMBERS` fixture; independent of supervisor sim-bar.
 
 ### 7.9 Biblioteca — resource cards and content modal
 
@@ -512,6 +513,7 @@ Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
 | Assigned grupos + catalogs | LMS assignment API `TBD (needs confirmation)` |
 | Malla assignment by rol | LMS / HR `TBD (needs confirmation)` |
 | Direct reports | Org chart `TBD (needs confirmation)` |
+| Report last connection | Moodle user `lastaccess` `TBD (needs confirmation)` |
 
 ### 9.2 Prototype demo fixtures (HTML-only)
 
@@ -551,7 +553,7 @@ Grupo name and description render dynamically from `ASSIGNED_GRUPOS`. Demo copy:
 
 **Mis favoritos (bookmarks):** `mf-bookmarks` in `localStorage`; demo seed on first visit: **NOR-3**, **COM-2**, **MLL-4**. Production source `TBD (needs confirmation)`.
 
-**Mi equipo (`EQUIPO_MEMBERS` in `mi-formacion.js`):** six direct reports with RUT/DNI, gerencia, área, cargo, familia de cargo, and per-member `approved` curso IDs. **Avance general** = `round(approved.length / 34 × 100)` (same rule as Inicio for that user). Demo range: Pedro **26%** → Valentina **100%**.
+**Mi equipo (`EQUIPO_MEMBERS` in `mi-formacion.js`):** six direct reports with RUT/DNI, gerencia, área, cargo, familia de cargo, **`ultimaConexion`** (demo datetime; production = Moodle `lastaccess`), and per-member `approved` curso IDs. **Avance general** = `round(approved.length / 34 × 100)` (same rule as Inicio for that user). Demo range: Pedro **26%** → Valentina **100%**.
 
 #### Biblioteca (`biblioteca.html`) — optional resources (12 demo items)
 
@@ -830,6 +832,7 @@ Diagnóstico ──► Ejecución ──► Certificación
 | 2 | 2026-06-08 | Mis cursos carousel sections: removed per-grupo description under section title; descriptions remain on `grupo.html` only (§4.3, §9) |
 | 3 | 2026-06-08 | Notifications dropdown heading shortened to *Recordatorios* (§7.5) |
 | 4 | 2026-06-08 | Sim-bar restyled with neutral gray palette (decoupled from `--brand-primary`) |
+| 2 | 2026-06-11 | Mi equipo modal profile: **Última conexión** field per member (`EQUIPO_MEMBERS.ultimaConexion`; production Moodle `lastaccess`) — §4.8, §7.8, §9 |
 
 ---
 
